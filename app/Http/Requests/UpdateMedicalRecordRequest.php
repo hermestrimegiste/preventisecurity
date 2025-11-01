@@ -4,19 +4,17 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreMedicalRecordRequest extends FormRequest
+class UpdateMedicalRecordRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->can('create medical records');
+        return $this->user()->can('edit medical records');
     }
 
     public function rules(): array
     {
         return [
-            'patient_id' => ['required', 'exists:patients,id'],
-            'appointment_id' => ['required', 'exists:appointments,id'],
-            'chief_complaint' => ['required', 'string', 'max:1000'],
+            'chief_complaint' => ['sometimes', 'required', 'string', 'max:1000'],
             'diagnosis' => ['nullable', 'string', 'max:1000'],
             'examination_notes' => ['nullable', 'string', 'max:2000'],
             'treatment_plan' => ['nullable', 'string', 'max:2000'],
@@ -30,8 +28,6 @@ class StoreMedicalRecordRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'patient_id' => 'patient',
-            'appointment_id' => 'appointment',
             'chief_complaint' => 'chief complaint',
             'examination_notes' => 'examination notes',
             'treatment_plan' => 'treatment plan',

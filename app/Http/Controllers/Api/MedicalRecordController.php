@@ -1,35 +1,44 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\StoreMedicalRecordRequest;
 use App\Http\Requests\UpdateMedicalRecordRequest;
 use App\Models\MedicalRecord;
 use App\Models\Appointment;
 use App\Models\Patient;
-use Illuminate\Http\Request;
-use Inertia\Inertia;
+use OpenApi\Annotations as OA;
+
+/**
+ * @OA\Tag(
+ *     name="Medical Records",
+ *     description="Endpoints for managing medical records"
+ * )
+ */
 
 class MedicalRecordController extends Controller
 {
-    public function create(Request $request)
-    {
-        $appointment = null;
-        $patient = null;
-
-        if ($request->has('appointment_id')) {
-            $appointment = Appointment::with('patient')->findOrFail($request->appointment_id);
-            $patient = $appointment->patient;
-        } elseif ($request->has('patient_id')) {
-            $patient = Patient::findOrFail($request->patient_id);
-        }
-
-        return Inertia::render('MedicalRecords/Create', [
-            'appointment' => $appointment,
-            'patient' => $patient,
-        ]);
-    }
-
+    /**
+     * @OA\Post(
+     *     path="/api/medical-records",
+     *     summary="Create a new medical record",
+     *     tags={"Medical Records"},
+     *     security={{"bearerAuth": {}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/StoreMedicalRecordRequest")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Medical record created successfully",
+     *         @OA\JsonContent(ref="#/components/schemas/MedicalRecord")
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     )
+     * )
+     */
     public function store(StoreMedicalRecordRequest $request)
     {
         $data = $request->validated();
@@ -42,34 +51,24 @@ class MedicalRecordController extends Controller
             $appointment->markAsCompleted();
         }
 
-        return redirect()->route('medical-records.show', $record)
-            ->with('success', 'Medical record created successfully.');
+        $record->load(['patient', 'appointment', 'doctor']);
+
+        return response()->json($record, 201);
     }
 
     public function show(MedicalRecord $medicalRecord)
     {
         $medicalRecord->load(['patient', 'appointment', 'doctor']);
 
-        return Inertia::render('MedicalRecords/Show', [
-            'record' => $medicalRecord,
-        ]);
-    }
-
-    public function edit(MedicalRecord $medicalRecord)
-    {
-        $medicalRecord->load(['patient', 'appointment']);
-
-        return Inertia::render('MedicalRecords/Edit', [
-            'record' => $medicalRecord,
-        ]);
+        return response()->json($medicalRecord);
     }
 
     public function update(UpdateMedicalRecordRequest $request, MedicalRecord $medicalRecord)
     {
         $medicalRecord->update($request->validated());
+        $medicalRecord->load(['patient', 'appointment', 'doctor']);
 
-        return redirect()->route('medical-records.show', $medicalRecord)
-            ->with('success', 'Medical record updated successfully.');
+        return response()->json($medicalRecord);
     }
 
     public function destroy(MedicalRecord $medicalRecord)
@@ -78,8 +77,7 @@ class MedicalRecordController extends Controller
 
         $medicalRecord->delete();
 
-        return redirect()->route('patients.show', $medicalRecord->patient_id)
-            ->with('success', 'Medical record deleted successfully.');
+        return response()->json(null, 204);
     }
 
     public function byPatient(Patient $patient)
@@ -89,10 +87,7 @@ class MedicalRecordController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(15);
 
-        return Inertia::render('MedicalRecords/ByPatient', [
-            'patient' => $patient,
-            'records' => $records,
-        ]);
+        return response()->json($records);
     }
 
     public function followUps()
@@ -105,7 +100,7 @@ class MedicalRecordController extends Controller
             ->overdueFollowUps()
             ->paginate(20);
 
-        return Inertia::render('MedicalRecords/FollowUps', [
+        return response()->json([
             'upcoming' => $upcoming,
             'overdue' => $overdue,
         ]);

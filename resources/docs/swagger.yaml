@@ -1,0 +1,33 @@
+openapi: 3.0.0
+info:
+  title: MediCare API Documentation
+  description: API documentation for MediCare - A healthcare management system
+  version: 1.0.0
+  contact:
+    email: support@medicare.com
+    name: MediCare Support
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: "http://localhost:8000"
+    description: API Server
+security:
+  - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+tags:
+  - name: Authentication
+    description: API Endpoints for Authentication
+  - name: Patients
+    description: Endpoints for managing patients
+  - name: Appointments
+    description: Endpoints for managing appointments
+  - name: Medical Records
+    description: Endpoints for managing medical records
+  - name: Organizations
+    description: Endpoints for managing organizations

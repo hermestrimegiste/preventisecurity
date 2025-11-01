@@ -11,7 +11,7 @@ class UpdateAppointmentRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return $this->user()->can('edit appointments');
     }
 
     /**
@@ -22,7 +22,23 @@ class UpdateAppointmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'patient_id' => ['sometimes', 'required', 'exists:patients,id'],
+            'doctor_id' => ['sometimes', 'required', 'exists:users,id'],
+            'appointment_date' => ['sometimes', 'required', 'date'],
+            'duration_minutes' => ['sometimes', 'required', 'integer', 'min:15', 'max:240'],
+            'status' => ['sometimes', 'required', 'in:scheduled,completed,cancelled,no_show'],
+            'reason' => ['nullable', 'string', 'max:255'],
+            'notes' => ['nullable', 'string', 'max:1000'],
+        ];
+    }
+
+    public function attributes(): array
+    {
+        return [
+            'patient_id' => 'patient',
+            'doctor_id' => 'doctor',
+            'appointment_date' => 'appointment date',
+            'duration_minutes' => 'duration',
         ];
     }
 }

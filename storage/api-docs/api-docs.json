@@ -2,8 +2,9 @@
     "openapi": "3.0.0",
     "info": {
         "title": "MediCare API Documentation",
-        "description": "API documentation for the MediCare platform",
+        "description": "API documentation for MediCare - A healthcare management system",
         "contact": {
+            "name": "MediCare Support",
             "email": "support@medicare.com"
         },
         "license": {
@@ -14,22 +15,184 @@
     },
     "servers": [
         {
-            "url": "http://my-default-host.com",
+            "url": "http://localhost:8000",
             "description": "API Server"
         }
     ],
     "paths": {
+        "/api/appointments": {
+            "get": {
+                "tags": [
+                    "Appointments"
+                ],
+                "summary": "List all appointments",
+                "operationId": "812c4f15927f3d0e3e959538a6f1104b",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filter by status",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "scheduled",
+                                "completed",
+                                "cancelled"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "doctor_id",
+                        "in": "query",
+                        "description": "Filter by doctor ID",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "description": "Filter by date (YYYY-MM-DD)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of appointments",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Appointment"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/medical-records": {
+            "post": {
+                "tags": [
+                    "Medical Records"
+                ],
+                "summary": "Create a new medical record",
+                "operationId": "562a9bb1a3476fa3cd18ea0d9f82b4e4",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreMedicalRecordRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Medical record created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MedicalRecord"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/organizations": {
+            "get": {
+                "tags": [
+                    "Organizations"
+                ],
+                "summary": "List all organizations for the authenticated user",
+                "operationId": "a6f3e52e9b7995087fc40990424c2977",
+                "responses": {
+                    "200": {
+                        "description": "List of organizations",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Organization"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/patients": {
             "get": {
                 "tags": [
                     "Patients"
                 ],
-                "summary": "Get list of patients",
-                "description": "Returns list of patients",
-                "operationId": "getPatientsList",
+                "summary": "List all patients",
+                "operationId": "0df0d65f049161931654c3e188ca8f93",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search term",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "gender",
+                        "in": "query",
+                        "description": "Filter by gender",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "male",
+                                "female",
+                                "other"
+                            ]
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Successful operation",
+                        "description": "List of patients",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -40,101 +203,827 @@
                                 }
                             }
                         }
-                    },
-                    "401": {
-                        "description": "Unauthenticated"
-                    },
-                    "403": {
-                        "description": "Forbidden"
                     }
-                }
-            }
-        },
-        "/api/patients/{id}": {
-            "get": {
-                "tags": [
-                    "Patients"
-                ],
-                "summary": "Get patient information",
-                "description": "Returns patient data",
-                "operationId": "getPatientById",
-                "parameters": [
+                },
+                "security": [
                     {
-                        "name": "id",
-                        "in": "path",
-                        "description": "Patient id",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
+                        "bearerAuth": []
                     }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Patient"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "401": {
-                        "description": "Unauthenticated"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    }
-                }
+                ]
             }
         }
     },
     "components": {
         "schemas": {
-            "Patient": {
+            "Appointment": {
                 "required": [
-                    "id",
+                    "patient_id",
+                    "doctor_id",
+                    "appointment_date",
+                    "duration_minutes"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "organization_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "patient_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "doctor_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "appointment_date": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-01-01 14:00:00"
+                    },
+                    "duration_minutes": {
+                        "type": "integer",
+                        "example": 30
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "scheduled",
+                            "completed",
+                            "cancelled"
+                        ],
+                        "example": "scheduled"
+                    },
+                    "reason": {
+                        "type": "string",
+                        "example": "Routine checkup",
+                        "nullable": true
+                    },
+                    "notes": {
+                        "type": "string",
+                        "example": "Patient has allergies to penicillin",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "deleted_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "patient": {
+                        "$ref": "#/components/schemas/Patient"
+                    },
+                    "doctor": {
+                        "$ref": "#/components/schemas/User"
+                    }
+                },
+                "type": "object"
+            },
+            "StoreAppointmentRequest": {
+                "required": [
+                    "patient_id",
+                    "doctor_id",
+                    "appointment_date",
+                    "duration_minutes"
+                ],
+                "properties": {
+                    "patient_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "doctor_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "appointment_date": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-01-01 14:00:00"
+                    },
+                    "duration_minutes": {
+                        "type": "integer",
+                        "maximum": 240,
+                        "minimum": 15,
+                        "example": 30
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "scheduled",
+                            "completed",
+                            "cancelled"
+                        ],
+                        "example": "scheduled"
+                    },
+                    "reason": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "Routine checkup",
+                        "nullable": true
+                    },
+                    "notes": {
+                        "type": "string",
+                        "maxLength": 1000,
+                        "example": "Patient has allergies to penicillin",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateAppointmentRequest": {
+                "properties": {
+                    "patient_id": {
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "doctor_id": {
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "appointment_date": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-01-01 14:00:00",
+                        "nullable": true
+                    },
+                    "duration_minutes": {
+                        "type": "integer",
+                        "maximum": 240,
+                        "minimum": 15,
+                        "example": 30,
+                        "nullable": true
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "scheduled",
+                            "completed",
+                            "cancelled"
+                        ],
+                        "example": "completed",
+                        "nullable": true
+                    },
+                    "reason": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "Routine checkup",
+                        "nullable": true
+                    },
+                    "notes": {
+                        "type": "string",
+                        "maxLength": 1000,
+                        "example": "Patient has allergies to penicillin",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "MedicalRecord": {
+                "required": [
+                    "patient_id",
+                    "appointment_id",
+                    "chief_complaint"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "organization_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "patient_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "appointment_id": {
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "doctor_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "chief_complaint": {
+                        "type": "string",
+                        "example": "Headache and fever"
+                    },
+                    "diagnosis": {
+                        "type": "string",
+                        "example": "Viral infection",
+                        "nullable": true
+                    },
+                    "examination_notes": {
+                        "type": "string",
+                        "example": "Patient presents with high fever and headache",
+                        "nullable": true
+                    },
+                    "treatment_plan": {
+                        "type": "string",
+                        "example": "Prescribed paracetamol and rest",
+                        "nullable": true
+                    },
+                    "prescription": {
+                        "type": "string",
+                        "example": "Paracetamol 500mg every 6 hours as needed",
+                        "nullable": true
+                    },
+                    "lab_tests": {
+                        "type": "string",
+                        "example": "CBC, COVID-19 test",
+                        "nullable": true
+                    },
+                    "follow_up_instructions": {
+                        "type": "string",
+                        "example": "Return if symptoms worsen",
+                        "nullable": true
+                    },
+                    "follow_up_date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2023-02-01",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "patient": {
+                        "$ref": "#/components/schemas/Patient"
+                    },
+                    "doctor": {
+                        "$ref": "#/components/schemas/User"
+                    },
+                    "appointment": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/Appointment"
+                            }
+                        ],
+                        "nullable": true,
+                        "description": "Related appointment"
+                    }
+                },
+                "type": "object"
+            },
+            "StoreMedicalRecordRequest": {
+                "required": [
+                    "patient_id",
+                    "appointment_id",
+                    "chief_complaint"
+                ],
+                "properties": {
+                    "patient_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "appointment_id": {
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "chief_complaint": {
+                        "type": "string",
+                        "maxLength": 1000,
+                        "example": "Headache and fever"
+                    },
+                    "diagnosis": {
+                        "type": "string",
+                        "maxLength": 1000,
+                        "example": "Viral infection",
+                        "nullable": true
+                    },
+                    "examination_notes": {
+                        "type": "string",
+                        "maxLength": 2000,
+                        "example": "Patient presents with high fever and headache",
+                        "nullable": true
+                    },
+                    "treatment_plan": {
+                        "type": "string",
+                        "maxLength": 2000,
+                        "example": "Prescribed paracetamol and rest",
+                        "nullable": true
+                    },
+                    "prescription": {
+                        "type": "string",
+                        "maxLength": 2000,
+                        "example": "Paracetamol 500mg every 6 hours as needed",
+                        "nullable": true
+                    },
+                    "lab_tests": {
+                        "type": "string",
+                        "maxLength": 1000,
+                        "example": "CBC, COVID-19 test",
+                        "nullable": true
+                    },
+                    "follow_up_instructions": {
+                        "type": "string",
+                        "maxLength": 1000,
+                        "example": "Return if symptoms worsen",
+                        "nullable": true
+                    },
+                    "follow_up_date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2023-02-01",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateMedicalRecordRequest": {
+                "properties": {
+                    "chief_complaint": {
+                        "type": "string",
+                        "maxLength": 1000,
+                        "example": "Headache and fever",
+                        "nullable": true
+                    },
+                    "diagnosis": {
+                        "type": "string",
+                        "maxLength": 1000,
+                        "example": "Viral infection",
+                        "nullable": true
+                    },
+                    "examination_notes": {
+                        "type": "string",
+                        "maxLength": 2000,
+                        "example": "Patient presents with high fever and headache",
+                        "nullable": true
+                    },
+                    "treatment_plan": {
+                        "type": "string",
+                        "maxLength": 2000,
+                        "example": "Prescribed paracetamol and rest",
+                        "nullable": true
+                    },
+                    "prescription": {
+                        "type": "string",
+                        "maxLength": 2000,
+                        "example": "Paracetamol 500mg every 6 hours as needed",
+                        "nullable": true
+                    },
+                    "lab_tests": {
+                        "type": "string",
+                        "maxLength": 1000,
+                        "example": "CBC, COVID-19 test",
+                        "nullable": true
+                    },
+                    "follow_up_instructions": {
+                        "type": "string",
+                        "maxLength": 1000,
+                        "example": "Return if symptoms worsen",
+                        "nullable": true
+                    },
+                    "follow_up_date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2023-02-01",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "Organization": {
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Acme Clinic"
+                    },
+                    "slug": {
+                        "type": "string",
+                        "example": "acme-clinic"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "info@acmeclinic.com",
+                        "nullable": true
+                    },
+                    "phone": {
+                        "type": "string",
+                        "example": "+1234567890",
+                        "nullable": true
+                    },
+                    "address": {
+                        "type": "string",
+                        "example": "123 Medical Center Dr, City, Country",
+                        "nullable": true
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "deleted_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "StoreOrganizationRequest": {
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "Acme Clinic"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "maxLength": 255,
+                        "example": "info@acmeclinic.com",
+                        "nullable": true
+                    },
+                    "phone": {
+                        "type": "string",
+                        "maxLength": 20,
+                        "example": "+1234567890",
+                        "nullable": true
+                    },
+                    "address": {
+                        "type": "string",
+                        "maxLength": 500,
+                        "example": "123 Medical Center Dr, City, Country",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateOrganizationRequest": {
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "Acme Clinic",
+                        "nullable": true
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "maxLength": 255,
+                        "example": "info@acmeclinic.com",
+                        "nullable": true
+                    },
+                    "phone": {
+                        "type": "string",
+                        "maxLength": 20,
+                        "example": "+1234567890",
+                        "nullable": true
+                    },
+                    "address": {
+                        "type": "string",
+                        "maxLength": 500,
+                        "example": "123 Medical Center Dr, City, Country",
+                        "nullable": true
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "example": true,
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "User": {
+                "required": [
                     "name",
                     "email"
                 ],
                 "properties": {
                     "id": {
                         "type": "integer",
-                        "format": "int64"
+                        "example": 1
                     },
                     "name": {
-                        "type": "string"
+                        "type": "string",
+                        "example": "John Doe"
                     },
                     "email": {
                         "type": "string",
-                        "format": "email"
+                        "format": "email",
+                        "example": "john.doe@example.com"
                     },
-                    "phone": {
+                    "email_verified_at": {
                         "type": "string",
+                        "format": "date-time",
                         "nullable": true
                     },
-                    "address": {
-                        "type": "string",
+                    "current_organization_id": {
+                        "type": "integer",
+                        "example": 1,
                         "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "Patient": {
+                "required": [
+                    "first_name",
+                    "last_name",
+                    "date_of_birth",
+                    "gender",
+                    "phone"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "organization_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "first_name": {
+                        "type": "string",
+                        "example": "John"
+                    },
+                    "last_name": {
+                        "type": "string",
+                        "example": "Doe"
                     },
                     "date_of_birth": {
                         "type": "string",
                         "format": "date",
+                        "example": "1990-01-15"
+                    },
+                    "gender": {
+                        "type": "string",
+                        "enum": [
+                            "male",
+                            "female",
+                            "other"
+                        ],
+                        "example": "male"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "john.doe@example.com",
+                        "nullable": true
+                    },
+                    "phone": {
+                        "type": "string",
+                        "example": "+1234567890"
+                    },
+                    "address": {
+                        "type": "string",
+                        "example": "123 Main St, City",
+                        "nullable": true
+                    },
+                    "emergency_contact_name": {
+                        "type": "string",
+                        "example": "Jane Doe",
+                        "nullable": true
+                    },
+                    "emergency_contact_phone": {
+                        "type": "string",
+                        "example": "+1987654321",
+                        "nullable": true
+                    },
+                    "medical_history": {
+                        "type": "string",
+                        "example": "Hypertension, Diabetes",
+                        "nullable": true
+                    },
+                    "allergies": {
+                        "type": "string",
+                        "example": "Penicillin, Nuts",
+                        "nullable": true
+                    },
+                    "blood_group": {
+                        "type": "string",
+                        "example": "A+",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "deleted_at": {
+                        "type": "string",
+                        "format": "date-time",
                         "nullable": true
                     }
                 },
                 "type": "object"
+            },
+            "StorePatientRequest": {
+                "required": [
+                    "first_name",
+                    "last_name",
+                    "date_of_birth",
+                    "gender",
+                    "phone"
+                ],
+                "properties": {
+                    "first_name": {
+                        "type": "string",
+                        "example": "John"
+                    },
+                    "last_name": {
+                        "type": "string",
+                        "example": "Doe"
+                    },
+                    "date_of_birth": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "1990-01-15"
+                    },
+                    "gender": {
+                        "type": "string",
+                        "enum": [
+                            "male",
+                            "female",
+                            "other"
+                        ],
+                        "example": "male"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "john.doe@example.com",
+                        "nullable": true
+                    },
+                    "phone": {
+                        "type": "string",
+                        "example": "+1234567890"
+                    },
+                    "address": {
+                        "type": "string",
+                        "example": "123 Main St, City",
+                        "nullable": true
+                    },
+                    "emergency_contact_name": {
+                        "type": "string",
+                        "example": "Jane Doe",
+                        "nullable": true
+                    },
+                    "emergency_contact_phone": {
+                        "type": "string",
+                        "example": "+1987654321",
+                        "nullable": true
+                    },
+                    "medical_history": {
+                        "type": "string",
+                        "example": "Hypertension, Diabetes",
+                        "nullable": true
+                    },
+                    "allergies": {
+                        "type": "string",
+                        "example": "Penicillin, Nuts",
+                        "nullable": true
+                    },
+                    "blood_group": {
+                        "type": "string",
+                        "example": "A+",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "UpdatePatientRequest": {
+                "required": [
+                    "first_name",
+                    "last_name",
+                    "date_of_birth",
+                    "gender",
+                    "phone"
+                ],
+                "properties": {
+                    "first_name": {
+                        "type": "string",
+                        "example": "John"
+                    },
+                    "last_name": {
+                        "type": "string",
+                        "example": "Doe"
+                    },
+                    "date_of_birth": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "1990-01-15"
+                    },
+                    "gender": {
+                        "type": "string",
+                        "enum": [
+                            "male",
+                            "female",
+                            "other"
+                        ],
+                        "example": "male"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "john.doe@example.com"
+                    },
+                    "phone": {
+                        "type": "string",
+                        "example": "+1234567890"
+                    },
+                    "address": {
+                        "type": "string",
+                        "example": "123 Main St"
+                    },
+                    "emergency_contact_name": {
+                        "type": "string",
+                        "example": "Jane Doe"
+                    },
+                    "emergency_contact_phone": {
+                        "type": "string",
+                        "example": "+1987654321"
+                    },
+                    "medical_history": {
+                        "type": "string",
+                        "example": "Diabetes type 2"
+                    },
+                    "allergies": {
+                        "type": "string",
+                        "example": "Penicillin"
+                    },
+                    "blood_group": {
+                        "type": "string",
+                        "example": "A+"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
             }
         }
     },
     "tags": [
         {
+            "name": "Appointments",
+            "description": "Endpoints for managing appointments"
+        },
+        {
+            "name": "Medical Records",
+            "description": "Endpoints for managing medical records"
+        },
+        {
+            "name": "Organizations",
+            "description": "Endpoints for managing organizations"
+        },
+        {
             "name": "Patients",
-            "description": "API Endpoints for managing patients"
+            "description": "Endpoints for managing patients"
         }
     ]
 }
