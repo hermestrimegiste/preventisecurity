@@ -1,17 +1,19 @@
 # 🏥 MediCare: Multi-Tenant Medical Clinic Platform
 
-MediCare is a professional, multi-tenant web application designed for managing patient appointments and medical records across multiple organizations (clinics/hospitals).
+MediCare is a professional, multi-tenant web application designed for managing patient appointments across multiple organizations (clinics/hospitals).
 
 This project demonstrates expertise in building complex, production-ready applications with strict **data isolation** and **Role-Based Access Control (RBAC)**, using a modern Laravel/Vue stack.
 
 ---
+
+
 ## 🚀 Live Demo & Repository
 
 | Deliverable | URL |
 | :--- | :--- |
-| **Deployed Application** | **[LINK TO YOUR LIVE DEPLOYMENT HERE]** |
-| **API Documentation (Swagger)** | **[YOUR_APP_URL]/api/documentation** |
-| **GitHub Repository** | **[LINK TO YOUR GITHUB REPOSITORY HERE]** |
+| **Deployed Application** | **[https://medicare.aourisis.org]** |
+| **API Documentation (Swagger)** | **[https://medicare.aourisis.orgL]/api/documentation** |
+| **GitHub Repository** | **[https://github.com/hermestrimegiste/medicare]** |
 
 ---
 ## ✨ Features Implemented (MediCare - Option 2)
@@ -24,11 +26,11 @@ This project demonstrates expertise in building complex, production-ready applic
 * **Two User Roles:** Implemented using `spatie/laravel-permission`:
     * `Admin`: Manages the Organization's settings and members.
     * `Doctor`: Manages Patients, Appointments, and Medical Records.
+    * `Patient`: Manages their own profile and appointments.
 
 ### Business Features
 * **Patient Management:** Full CRUD operations for patients (isolated per organization).
 * **Appointment Scheduling:** Creation, calendar viewing (filtered by doctor/date), and status management (Scheduled, Completed, Cancelled).
-* **Medical Records:** Creation of detailed consultation notes and simple prescriptions tied to a specific appointment.
 
 ---
 ## 🛠️ Technology Stack Justification
@@ -40,7 +42,7 @@ a multi-tenant application.
 | Dependency | Rationale |
 | :--- | :--- |
 | **Laravel (PHP)** | Chosen for its **stability, security, and architectural maturity**, making it the ideal choice to enforce strict **multi-tenant data isolation** (via Global Scopes). |
-| **PostgreSQL** | A robust relational database selected for its superior **data integrity** and transactional safety, essential for sensitive medical data. |
+| **MySQL** | A robust relational database selected for its superior **data integrity** and transactional safety, essential for sensitive medical data. |
 | **Inertia.js** | Used to create a modern **Monolith/Hybrid application**. It drastically accelerates development by using Laravel's routing/validation with Vue's reactivity, avoiding the 
 complexity of a separate API. |
 
@@ -68,8 +70,10 @@ These instructions assume you have PHP (>= 8.2), Composer, and Node.js installed
 
 1.  **Clone the repository:**
     ```bash
-    git clone [YOUR REPO LINK]
-    cd medicare-platform
+    git clone [https://github.com/hermestrimegiste/medicare.git]
+    or
+    git clone [git@github.com:hermestrimegiste/medicare.git]
+    cd medicare
     ```
 
 2.  **Install PHP and Composer Dependencies:**
@@ -80,6 +84,10 @@ These instructions assume you have PHP (>= 8.2), Composer, and Node.js installed
 3.  **Install Node.js Dependencies (Vue/Tailwind):**
     ```bash
     npm install
+    or
+    yarn install
+    or 
+    bun install
     ```
 
 4.  **Configure Environment:**
@@ -102,9 +110,23 @@ These instructions assume you have PHP (>= 8.2), Composer, and Node.js installed
 The application will be accessible at `http://127.0.0.1:8000`.
 
 ---
-## 🔑 Demo Credentials
+## 🔑 populate Demo data
+```bash
+    php artisan tinker
+    $users = User::factory()->count(10)->create();
+    $organizations = Organization::factory()->count(10)->create();
+    $appointments = Appointment::factory()->count(10)->create();
+    #$medicalRecords = MedicalRecord::factory()->count(10)->create();
+    $patients = Patient::factory()->count(50)->create();
+    exit;
+```
 
-| Role | Email | Password | Organization Access | Purpose for Testing |
-| :--- | :--- | :--- | :--- | :--- |
-| **Admin** | `admin@demo.com` | `password` | Clinic Alpha | Organization setup and member invitation. |
-| **Doctor (Multi-Org)** | `doctor@demo.com` | `password` | Clinic Alpha, Clinic Beta | **Crucial** for testing data isolation and the Organization Switcher component. |
+## 👤 Test Credentials
+
+| Role | Email | Password | Organization(s) |
+|------|-------|----------|-----------------|
+| **Admin** | `admin@demo.com` | `password` | Clinic Alpha |
+| **Doctor (Multi-Org)** | `doctor@demo.com` | `password` | Clinic Alpha, Clinic Beta |
+| **Doctor (Beta)** | `doctor.beta@demo.com` | `password` | Clinic Beta |
+| **Admin (Metro)** | `admin.metro@demo.com` | `password` | Metropolitan Hospital |
+| **Doctor (Metro)** | `doctor.metro@demo.com` | `password` | Metropolitan Hospital |
