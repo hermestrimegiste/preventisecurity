@@ -121,6 +121,11 @@ The application will be accessible at `http://127.0.0.1:8000`.
     exit;
 ```
 
+## test 
+```bash
+    php artisan test
+```
+
 ## 👤 Test Credentials
 
 | Role | Email | Password | Organization(s) |
