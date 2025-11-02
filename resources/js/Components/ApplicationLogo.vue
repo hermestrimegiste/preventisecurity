@@ -1,11 +1,3 @@
 <template>
-    <svg
-        viewBox="0 0 200 200"
-        xmlns="http://www.w3.org/2000/svg"
-        class="fill-current"
-    >
-        <path d="M100 20C93.4 20 88 25.4 88 32V60H60C53.4 60 48 65.4 48 72V88H32C25.4 88 20 93.4 20 100C20 106.6 25.4 112 32 112H48V128C48 134.6 53.4 140 60 140H88V168C88 174.6 93.4 180 100
-180C106.6 180 112 174.6 112 168V140H140C146.6 140 152 134.6 152 128V112H168C174.6 112 180 106.6 180 100C180 93.4 174.6 88 168 88H152V72C152 65.4 146.6 60 140 60H112V32C112 25.4 106.6 20 100 20Z"/>
-        <circle cx="100" cy="100" r="15" class="fill-white"/>
-    </svg>
+    <span class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-teal-500 bg-clip-text text-transparent">MediCare</span>
 </template>
