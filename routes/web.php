@@ -7,6 +7,8 @@ use App\Http\Controllers\MedicalRecordController;
 use App\Http\Controllers\OrganizationController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use App\Models\Patient;
+use App\Models\Appointment;
 use Inertia\Inertia;
 
 Route::get('/', function () {
@@ -19,7 +21,14 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    return Inertia::render('Dashboard', [
+    'stats' => [
+        'total_patients' => Patient::count(),
+        'appointments_today' => Appointment::whereDate('appointment_date', today())->count(),
+        'upcoming_appointments' => Appointment::where('appointment_date', '>=', now())->count(),
+        'completed_this_week' => Appointment::where('status', 'completed')->whereBetween('appointment_date', [now()->startOfWeek(), now()->endOfWeek()])->count(),
+    ]
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {

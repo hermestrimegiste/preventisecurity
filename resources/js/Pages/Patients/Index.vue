@@ -7,6 +7,12 @@ import SearchInput from '@/Components/SearchInput.vue';
 import Pagination from '@/Components/Pagination.vue';
 import { PlusIcon, UserIcon } from '@heroicons/vue/24/outline';
 
+//import moment
+import moment from 'moment';
+import 'moment/locale/fr';
+moment.locale('fr');
+
+
 const props = defineProps({
     patients: Object,
     filters: Object,
@@ -23,6 +29,9 @@ const searchPatients = (value) => {
             replace: true,
         }
     );
+};
+const calculateAge = (birthDate) => {
+  return moment(birthDate).fromNow(true, true);
 };
 </script>
 
@@ -67,7 +76,7 @@ const searchPatients = (value) => {
                                     Age
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Next Appointment
+                                    Prochain rendez-vous
                                 </th>
                                 <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Actions
@@ -96,13 +105,13 @@ const searchPatients = (value) => {
                                     <div class="text-sm text-gray-500">{{ patient.email }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {{ patient.age }} Ans
+                                    {{ calculateAge(patient.date_of_birth) }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     <span v-if="patient.next_appointment">
                                         {{ patient.next_appointment.formatted_date_time }}
                                     </span>
-                                    <span v-else class="text-gray-400">No upcoming appointment</span>
+                                    <span v-else class="text-gray-400">Aucun rendez-vous</span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <Link

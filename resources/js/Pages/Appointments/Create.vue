@@ -43,7 +43,7 @@ const submit = () => {
                                 <select v-model="form.patient_id" class="input" required>
                                     <option value="">Sélectionner un patient</option>
                                     <option v-for="patient in patients" :key="patient.id" :value="patient.id">
-                                        {{ patient.full_name }}
+                                        {{ patient.first_name }} {{ patient.last_name }}
                                     </option>
                                 </select>
                                 <div v-if="form.errors.patient_id" class="error">

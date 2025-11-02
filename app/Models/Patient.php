@@ -93,4 +93,10 @@ class Patient extends Model
     {
         return !empty($this->medical_history);
     }
+
+    // return patient.full_name
+    public function getFullNameAttribute()
+    {
+        return "{$this->first_name} {$this->last_name}";
+    }
 }

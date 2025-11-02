@@ -110,12 +110,12 @@ const filterAppointments = () => {
                                         :href="route('patients.show', appointment.patient.id)"
                                         class="text-sm font-medium text-medicare-600 hover:text-medicare-900"
                                     >
-                                        {{ appointment.patient.full_name }}
+                                        {{ appointment.patient.first_name }} {{ appointment.patient.last_name }}
                                     </Link>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     <!-- Dr. {{ appointment.doctor.name }} -->
-                                    {{ appointment.doctor.full_name }}
+                                    {{ appointment.doctor.name }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     {{ appointment.formatted_date_time }}
