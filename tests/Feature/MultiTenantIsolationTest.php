@@ -1,133 +1,169 @@
 <?php
 
+namespace Tests\Feature;
+
 use App\Models\Organization;
 use App\Models\Patient;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\TestCase;
 
-uses(RefreshDatabase::class);
+class MultiTenantIsolationTest extends TestCase
+{
+    use RefreshDatabase;
 
-beforeEach(function () {
-    $this->orgA = Organization::factory()->create(['name' => 'Clinic A']);
-    $this->orgB = Organization::factory()->create(['name' => 'Clinic B']);
+    protected $orgA;
+    protected $orgB;
+    protected $userA;
+    protected $userB;
+    protected $patientA;
+    protected $patientB;
 
-    $this->userA = User::factory()->create(['current_organization_id' => $this->orgA->id]);
-    $this->userA->organizations()->attach($this->orgA->id);
-    $this->userA->assignRole('doctor');
+    protected function setUp(): void
+    {
+        parent::setUp();
+        
+        // Créer les rôles et permissions nécessaires
+        $this->artisan('db:seed', ['--class' => 'RolePermissionSeeder']);
+        
+        $this->orgA = Organization::factory()->create(['name' => 'Clinic A']);
+        $this->orgB = Organization::factory()->create(['name' => 'Clinic B']);
 
-    $this->userB = User::factory()->create(['current_organization_id' => $this->orgB->id]);
-    $this->userB->organizations()->attach($this->orgB->id);
-    $this->userB->assignRole('doctor');
+        $this->userA = User::factory()->create(['current_organization_id' => $this->orgA->id]);
+        $this->userA->organizations()->attach($this->orgA->id);
+        $this->userA->assignRole('doctor');
 
-    $this->patientA = Patient::factory()->create([
-        'organization_id' => $this->orgA->id,
-        'first_name' => 'John',
-        'last_name' => 'Doe',
-    ]);
+        $this->userB = User::factory()->create(['current_organization_id' => $this->orgB->id]);
+        $this->userB->organizations()->attach($this->orgB->id);
+        $this->userB->assignRole('doctor');
 
-    $this->patientB = Patient::factory()->create([
-        'organization_id' => $this->orgB->id,
-        'first_name' => 'Jane',
-        'last_name' => 'Smith',
-    ]);
-});
+        $this->patientA = Patient::factory()->create([
+            'organization_id' => $this->orgA->id,
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+        ]);
 
-test('user can only see patients from their organization', function () {
-    $this->actingAs($this->userA);
+        $this->patientB = Patient::factory()->create([
+            'organization_id' => $this->orgB->id,
+            'first_name' => 'Jane',
+            'last_name' => 'Smith',
+        ]);
+    }
 
-    $patients = Patient::all();
+    #[Test]
+    public function user_can_only_see_patients_from_their_organization()
+    {
+        $this->actingAs($this->userA);
 
-    expect($patients)->toHaveCount(1)
-        ->and($patients->first()->id)->toBe($this->patientA->id)
-        ->and($patients->first()->first_name)->toBe('John');
-});
+        $patients = Patient::all();
 
-test('user cannot access patients from other organizations', function () {
-    $this->actingAs($this->userA);
+        $this->assertCount(1, $patients);
+        $this->assertEquals($this->patientA->id, $patients->first()->id);
+        $this->assertEquals('John', $patients->first()->first_name);
+    }
 
-    $patient = Patient::find($this->patientB->id);
+    #[Test]
+    public function user_cannot_access_patients_from_other_organizations()
+    {
+        $this->actingAs($this->userA);
 
-    expect($patient)->toBeNull();
-});
+        $patient = Patient::find($this->patientB->id);
 
-test('user can access patient from their organization via route', function () {
-    $this->actingAs($this->userA);
+        $this->assertNull($patient);
+    }
 
-    $response = $this->get(route('patients.show', $this->patientA));
+    #[Test]
+    public function user_can_access_patient_from_their_organization_via_route()
+    {
+        $this->actingAs($this->userA);
 
-    $response->assertOk();
-});
+        $response = $this->get(route('patients.show', $this->patientA));
 
-test('user cannot access patient from other organization via route', function () {
-    $this->actingAs($this->userA);
+        $response->assertOk();
+    }
 
-    $response = $this->get(route('patients.show', $this->patientB));
+    #[Test]
+    public function user_cannot_access_patient_from_other_organization_via_route()
+    {
+        $this->actingAs($this->userA);
 
-    $response->assertNotFound();
-});
+        $response = $this->get(route('patients.show', $this->patientB));
 
-test('patient is automatically assigned to current organization on creation', function () {
-    $this->actingAs($this->userA);
+        $response->assertNotFound();
+    }
 
-    $newPatient = Patient::create([
-        'first_name' => 'Test',
-        'last_name' => 'Patient',
-        'date_of_birth' => '1995-05-15',
-        'gender' => 'male',
-        'phone' => '+1234567890',
-    ]);
+    #[Test]
+    public function patient_is_automatically_assigned_to_current_organization_on_creation()
+    {
+        $this->actingAs($this->userA);
 
-    expect($newPatient->organization_id)->toBe($this->orgA->id);
-});
+        $newPatient = Patient::create([
+            'first_name' => 'Test',
+            'last_name' => 'Patient',
+            'date_of_birth' => '1995-05-15',
+            'gender' => 'male',
+            'phone' => '+1234567890',
+        ]);
 
-test('user with multiple organizations can switch context', function () {
-    $multiOrgUser = User::factory()->create([
-        'current_organization_id' => $this->orgA->id
-    ]);
-    $multiOrgUser->organizations()->attach([$this->orgA->id, $this->orgB->id]);
-    $multiOrgUser->assignRole('doctor');
+        $this->assertEquals($this->orgA->id, $newPatient->organization_id);
+    }
 
-    $this->actingAs($multiOrgUser);
+    #[Test]
+    public function user_with_multiple_organizations_can_switch_context()
+    {
+        $multiOrgUser = User::factory()->create([
+            'current_organization_id' => $this->orgA->id
+        ]);
+        $multiOrgUser->organizations()->attach([$this->orgA->id, $this->orgB->id]);
+        $multiOrgUser->assignRole('doctor');
 
-    $patients = Patient::all();
-    expect($patients)->toHaveCount(1)
-        ->and($patients->first()->id)->toBe($this->patientA->id);
+        $this->actingAs($multiOrgUser);
 
-    $multiOrgUser->switchOrganization($this->orgB->id);
-    $multiOrgUser->refresh();
+        $patients = Patient::all();
+        $this->assertCount(1, $patients);
+        $this->assertEquals($this->patientA->id, $patients->first()->id);
 
-    $patients = Patient::all();
-    expect($patients)->toHaveCount(1)
-        ->and($patients->first()->id)->toBe($this->patientB->id);
-});
+        $multiOrgUser->switchOrganization($this->orgB->id);
+        $multiOrgUser->refresh();
 
-test('updating patient does not change organization_id', function () {
-    $this->actingAs($this->userA);
+        $patients = Patient::all();
+        $this->assertCount(1, $patients);
+        $this->assertEquals($this->patientB->id, $patients->first()->id);
+    }
 
-    $originalOrgId = $this->patientA->organization_id;
+    #[Test]
+    public function updating_patient_does_not_change_organization_id()
+    {
+        $this->actingAs($this->userA);
 
-    $this->patientA->update([
-        'first_name' => 'Updated',
-    ]);
+        $originalOrgId = $this->patientA->organization_id;
 
-    expect($this->patientA->fresh()->organization_id)->toBe($originalOrgId);
-});
+        $this->patientA->update([
+            'first_name' => 'Updated',
+        ]);
 
-test('unauthorized user cannot create patient', function () {
-    $unauthorizedUser = User::factory()->create([
-        'current_organization_id' => $this->orgA->id
-    ]);
-    $unauthorizedUser->organizations()->attach($this->orgA->id);
+        $this->assertEquals($originalOrgId, $this->patientA->fresh()->organization_id);
+    }
 
-    $this->actingAs($unauthorizedUser);
+    #[Test]
+    public function unauthorized_user_cannot_create_patient()
+    {
+        $unauthorizedUser = User::factory()->create([
+            'current_organization_id' => $this->orgA->id
+        ]);
+        $unauthorizedUser->organizations()->attach($this->orgA->id);
 
-    $response = $this->post(route('patients.store'), [
-        'first_name' => 'Test',
-        'last_name' => 'Patient',
-        'date_of_birth' => '1995-05-15',
-        'gender' => 'male',
-        'phone' => '+1234567890',
-    ]);
+        $this->actingAs($unauthorizedUser);
 
-    $response->assertForbidden();
-});
+        $response = $this->post(route('patients.store'), [
+            'first_name' => 'Test',
+            'last_name' => 'Patient',
+            'date_of_birth' => '1995-05-15',
+            'gender' => 'male',
+            'phone' => '+1234567890',
+        ]);
+
+        $response->assertForbidden();
+    }
+}
