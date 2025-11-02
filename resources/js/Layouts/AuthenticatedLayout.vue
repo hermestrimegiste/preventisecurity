@@ -1,197 +1,281 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { Link, router, usePage } from '@inertiajs/vue3';
+import {
+    Dialog,
+    DialogPanel,
+    TransitionChild,
+    TransitionRoot,
+    Menu,
+    MenuButton,
+    MenuItems,
+    MenuItem,
+} from '@headlessui/vue';
+import {
+    Bars3Icon,
+    HomeIcon,
+    UsersIcon,
+    CalendarIcon,
+    DocumentTextIcon,
+    Cog6ToothIcon,
+    XMarkIcon,
+    ChevronDownIcon,
+    ArrowRightOnRectangleIcon,
+    UserCircleIcon,
+} from '@heroicons/vue/24/outline';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import Dropdown from '@/Components/Dropdown.vue';
-import DropdownLink from '@/Components/DropdownLink.vue';
-import NavLink from '@/Components/NavLink.vue';
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link } from '@inertiajs/vue3';
+import OrganizationSwitcher from '@/Components/OrganizationSwitcher.vue';
 
-const showingNavigationDropdown = ref(false);
+const sidebarOpen = ref(false);
+const page = usePage();
+
+const user = computed(() => page.props.auth.user);
+const organizations = computed(() => page.props.auth.user.organizations || []);
+const currentOrganizationId = computed(() => page.props.auth.user.current_organization_id);
+
+const navigation = [
+    { name: 'Dashboard', href: 'dashboard', icon: HomeIcon },
+    { name: 'Patients', href: 'patients.index', icon: UsersIcon },
+    { name: 'Rendez-vous', href: 'appointments.index', icon: CalendarIcon },
+    { name: 'Suivi', href: 'medical-records.follow-ups', icon: DocumentTextIcon },
+];
+
+const isCurrentRoute = (routeName) => {
+    return route().current(routeName + '*');
+};
+
+const logout = () => {
+    router.post(route('logout'));
+};
 </script>
 
 <template>
     <div>
-        <div class="min-h-screen bg-gray-100">
-            <nav
-                class="border-b border-gray-100 bg-white"
-            >
-                <!-- Primary Navigation Menu -->
-                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div class="flex h-16 justify-between">
-                        <div class="flex">
-                            <!-- Logo -->
-                            <div class="flex shrink-0 items-center">
-                                <Link :href="route('dashboard')">
-                                    <ApplicationLogo
-                                        class="block h-9 w-auto fill-current text-gray-800"
-                                    />
-                                </Link>
-                            </div>
-
-                            <!-- Navigation Links -->
-                            <div
-                                class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
-                            >
-                                <NavLink
-                                    :href="route('dashboard')"
-                                    :active="route().current('dashboard')"
-                                >
-                                    Dashboard
-                                </NavLink>
-                            </div>
-                        </div>
-
-                        <div class="hidden sm:ms-6 sm:flex sm:items-center">
-                            <!-- Settings Dropdown -->
-                            <div class="relative ms-3">
-                                <Dropdown align="right" width="48">
-                                    <template #trigger>
-                                        <span class="inline-flex rounded-md">
-                                            <button
-                                                type="button"
-                                                class="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
-                                            >
-                                                {{ $page.props.auth.user.name }}
-
-                                                <svg
-                                                    class="-me-0.5 ms-2 h-4 w-4"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 20 20"
-                                                    fill="currentColor"
-                                                >
-                                                    <path
-                                                        fill-rule="evenodd"
-                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                        clip-rule="evenodd"
-                                                    />
-                                                </svg>
-                                            </button>
-                                        </span>
-                                    </template>
-
-                                    <template #content>
-                                        <DropdownLink
-                                            :href="route('profile.edit')"
-                                        >
-                                            Profile
-                                        </DropdownLink>
-                                        <DropdownLink
-                                            :href="route('logout')"
-                                            method="post"
-                                            as="button"
-                                        >
-                                            Log Out
-                                        </DropdownLink>
-                                    </template>
-                                </Dropdown>
-                            </div>
-                        </div>
-
-                        <!-- Hamburger -->
-                        <div class="-me-2 flex items-center sm:hidden">
-                            <button
-                                @click="
-                                    showingNavigationDropdown =
-                                        !showingNavigationDropdown
-                                "
-                                class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none"
-                            >
-                                <svg
-                                    class="h-6 w-6"
-                                    stroke="currentColor"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        :class="{
-                                            hidden: showingNavigationDropdown,
-                                            'inline-flex':
-                                                !showingNavigationDropdown,
-                                        }"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M4 6h16M4 12h16M4 18h16"
-                                    />
-                                    <path
-                                        :class="{
-                                            hidden: !showingNavigationDropdown,
-                                            'inline-flex':
-                                                showingNavigationDropdown,
-                                        }"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12"
-                                    />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Responsive Navigation Menu -->
-                <div
-                    :class="{
-                        block: showingNavigationDropdown,
-                        hidden: !showingNavigationDropdown,
-                    }"
-                    class="sm:hidden"
+        <!-- Mobile sidebar -->
+        <TransitionRoot as="template" :show="sidebarOpen">
+            <Dialog as="div" class="relative z-50 lg:hidden" @close="sidebarOpen = false">
+                <TransitionChild
+                    as="template"
+                    enter="transition-opacity ease-linear duration-300"
+                    enter-from="opacity-0"
+                    enter-to="opacity-100"
+                    leave="transition-opacity ease-linear duration-300"
+                    leave-from="opacity-100"
+                    leave-to="opacity-0"
                 >
-                    <div class="space-y-1 pb-3 pt-2">
-                        <ResponsiveNavLink
-                            :href="route('dashboard')"
-                            :active="route().current('dashboard')"
-                        >
-                            Dashboard
-                        </ResponsiveNavLink>
-                    </div>
+                    <div class="fixed inset-0 bg-gray-900/80" />
+                </TransitionChild>
 
-                    <!-- Responsive Settings Options -->
-                    <div
-                        class="border-t border-gray-200 pb-1 pt-4"
+                <div class="fixed inset-0 flex">
+                    <TransitionChild
+                        as="template"
+                        enter="transition ease-in-out duration-300 transform"
+                        enter-from="-translate-x-full"
+                        enter-to="translate-x-0"
+                        leave="transition ease-in-out duration-300 transform"
+                        leave-from="translate-x-0"
+                        leave-to="-translate-x-full"
                     >
-                        <div class="px-4">
-                            <div
-                                class="text-base font-medium text-gray-800"
+                        <DialogPanel class="relative mr-16 flex w-full max-w-xs flex-1">
+                            <TransitionChild
+                                as="template"
+                                enter="ease-in-out duration-300"
+                                enter-from="opacity-0"
+                                enter-to="opacity-100"
+                                leave="ease-in-out duration-300"
+                                leave-from="opacity-100"
+                                leave-to="opacity-0"
                             >
-                                {{ $page.props.auth.user.name }}
+                                <div class="absolute left-full top-0 flex w-16 justify-center pt-5">
+                                    <button type="button" class="-m-2.5 p-2.5" @click="sidebarOpen = false">
+                                        <span class="sr-only">Close sidebar</span>
+                                        <XMarkIcon class="h-6 w-6 text-white" />
+                                    </button>
+                                </div>
+                            </TransitionChild>
+                            <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4">
+                                <div class="flex h-16 shrink-0 items-center">
+                                    <ApplicationLogo class="h-8 w-auto text-medicare-600" />
+                                </div>
+                                <nav class="flex flex-1 flex-col">
+                                    <ul role="list" class="flex flex-1 flex-col gap-y-7">
+                                        <li>
+                                            <ul role="list" class="-mx-2 space-y-1">
+                                                <li v-for="item in navigation" :key="item.name">
+                                                    <Link
+                                                        :href="route(item.href)"
+                                                        :class="[
+                                                            isCurrentRoute(item.href)
+                                                                ? 'bg-gray-50 text-medicare-600'
+                                                                : 'text-gray-700 hover:text-medicare-600 hover:bg-gray-50',
+                                                            'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors',
+                                                        ]"
+                                                    >
+                                                        <component
+                                                            :is="item.icon"
+                                                            :class="[
+                                                                isCurrentRoute(item.href)
+                                                                    ? 'text-medicare-600'
+                                                                    : 'text-gray-400 group-hover:text-medicare-600',
+                                                                'h-6 w-6 shrink-0',
+                                                            ]"
+                                                        />
+                                                        {{ item.name }}
+                                                    </Link>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </nav>
                             </div>
-                            <div class="text-sm font-medium text-gray-500">
-                                {{ $page.props.auth.user.email }}
-                            </div>
-                        </div>
+                        </DialogPanel>
+                    </TransitionChild>
+                </div>
+            </Dialog>
+        </TransitionRoot>
 
-                        <div class="mt-3 space-y-1">
-                            <ResponsiveNavLink :href="route('profile.edit')">
-                                Profile
-                            </ResponsiveNavLink>
-                            <ResponsiveNavLink
-                                :href="route('logout')"
-                                method="post"
-                                as="button"
+        <!-- Static sidebar for desktop -->
+        <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-64 lg:flex-col">
+            <div class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-blue-100 px-6 pb-4">
+                <div class="flex h-16 shrink-0 items-center">
+                    <ApplicationLogo class="h-8 w-auto text-medicare-600" />
+                </div>
+                <nav class="flex flex-1 flex-col">
+                    <ul role="list" class="flex flex-1 flex-col gap-y-7">
+                        <li>
+                            <ul role="list" class="-mx-2 space-y-1">
+                                <li v-for="item in navigation" :key="item.name">
+                                    <Link
+                                        :href="route(item.href)"
+                                        :class="[
+                                            isCurrentRoute(item.href)
+                                                ? 'bg-gray-50 text-medicare-600'
+                                                : 'text-gray-700 hover:text-medicare-600 hover:bg-gray-50',
+                                            'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors',
+                                        ]"
+                                    >
+                                        <component
+                                            :is="item.icon"
+                                            :class="[
+                                                isCurrentRoute(item.href)
+                                                    ? 'text-medicare-600'
+                                                    : 'text-gray-400 group-hover:text-medicare-600',
+                                                'h-6 w-6 shrink-0',
+                                            ]"
+                                        />
+                                        {{ item.name }}
+                                    </Link>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="mt-auto">
+                            <Link
+                                :href="route('organization.settings')"
+                                class="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-medicare-600 transition-colors"
                             >
-                                Log Out
-                            </ResponsiveNavLink>
-                        </div>
+                                <Cog6ToothIcon class="h-6 w-6 shrink-0 text-gray-400 group-hover:text-medicare-600" />
+                                Paramètres
+                            </Link>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <div class="lg:pl-64">
+            <!-- Top bar -->
+            <div class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
+                <button
+                    type="button"
+                    class="-m-2.5 p-2.5 text-gray-700 lg:hidden"
+                    @click="sidebarOpen = true"
+                >
+                    <span class="sr-only">Menu</span>
+                    <Bars3Icon class="h-6 w-6" />
+                </button>
+
+                <div class="h-6 w-px bg-gray-200 lg:hidden" />
+
+                <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
+                    <div class="relative flex flex-1"></div>
+                    <div class="flex items-center gap-x-4 lg:gap-x-6">
+                        <!-- Organization Switcher -->
+                        <OrganizationSwitcher
+                            v-if="organizations.length > 0"
+                            :organizations="organizations"
+                            :current-organization-id="currentOrganizationId"
+                        />
+
+                        <div class="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200" />
+
+                        <!-- User Menu -->
+                        <Menu as="div" class="relative">
+                            <MenuButton class="-m-1.5 flex items-center p-1.5 hover:bg-gray-50 rounded-lg transition-colors">
+                                <span class="sr-only">Menu Utilisateur</span>
+                                <div class="h-8 w-8 rounded-full bg-medicare-100 flex items-center justify-center">
+                                    <UserCircleIcon class="h-5 w-5 text-medicare-600" />
+                                </div>
+                                <span class="hidden lg:flex lg:items-center">
+                                    <span class="ml-4 text-sm font-semibold leading-6 text-gray-900">
+                                        {{ user.name }}
+                                    </span>
+                                    <ChevronDownIcon class="ml-2 h-5 w-5 text-gray-400" />
+                                </span>
+                            </MenuButton>
+                            <transition
+                                enter-active-class="transition ease-out duration-100"
+                                enter-from-class="transform opacity-0 scale-95"
+                                enter-to-class="transform opacity-100 scale-100"
+                                leave-active-class="transition ease-in duration-75"
+                                leave-from-class="transform opacity-100 scale-100"
+                                leave-to-class="transform opacity-0 scale-95"
+                            >
+                                <MenuItems class="absolute right-0 z-10 mt-2.5 w-64 origin-top-right rounded-lg bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
+                                    <MenuItem v-slot="{ active }">
+                                        <Link
+                                            :href="route('profile.edit')"
+                                            :class="[
+                                                active ? 'bg-gray-50' : '',
+                                                'block px-3 py-2 text-sm leading-6 text-gray-900 transition-colors',
+                                            ]"
+                                        >
+                                            Votre profil
+                                        </Link>
+                                    </MenuItem>
+                                    <MenuItem v-slot="{ active }">
+                                        <Link
+                                            :href="route('organization.settings')"
+                                            :class="[
+                                                active ? 'bg-gray-50' : '',
+                                                'block px-3 py-2 text-sm leading-6 text-gray-900 transition-colors',
+                                            ]"
+                                        >
+                                            Paramètres de l'organisation
+                                        </Link>
+                                    </MenuItem>
+                                    <MenuItem v-slot="{ active }">
+                                        <button
+                                            @click="logout"
+                                            :class="[
+                                                active ? 'bg-gray-50' : '',
+                                                'flex w-full items-center px-3 py-2 text-sm leading-6 text-gray-900 transition-colors',
+                                            ]"
+                                        >
+                                            <ArrowRightOnRectangleIcon class="h-5 w-5 mr-2 text-gray-400" />
+                                            Se deconnecter
+                                        </button>
+                                    </MenuItem>
+                                </MenuItems>
+                            </transition>
+                        </Menu>
                     </div>
                 </div>
-            </nav>
+            </div>
 
-            <!-- Page Heading -->
-            <header
-                class="bg-white shadow"
-                v-if="$slots.header"
-            >
-                <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                    <slot name="header" />
+            <main class="py-10">
+                <div class="px-4 sm:px-6 lg:px-8">
+                    <slot />
                 </div>
-            </header>
-
-            <!-- Page Content -->
-            <main>
-                <slot />
             </main>
         </div>
     </div>

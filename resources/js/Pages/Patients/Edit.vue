@@ -1,37 +1,41 @@
 <script setup>
-import { useForm, Head } from '@inertiajs/vue3';
+import { useForm, Head, Link } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Card from '@/Components/Card.vue';
 
+const props = defineProps({
+    patient: Object,
+});
+
 const form = useForm({
-    first_name: '',
-    last_name: '',
-    date_of_birth: '',
-    gender: '',
-    email: '',
-    phone: '',
-    address: '',
-    emergency_contact_name: '',
-    emergency_contact_phone: '',
-    medical_history: '',
-    allergies: '',
-    blood_group: '',
+    first_name: props.patient.first_name,
+    last_name: props.patient.last_name,
+    date_of_birth: props.patient.date_of_birth,
+    gender: props.patient.gender,
+    email: props.patient.email,
+    phone: props.patient.phone,
+    address: props.patient.address,
+    emergency_contact_name: props.patient.emergency_contact_name,
+    emergency_contact_phone: props.patient.emergency_contact_phone,
+    medical_history: props.patient.medical_history,
+    allergies: props.patient.allergies,
+    blood_group: props.patient.blood_group,
 });
 
 const submit = () => {
-    form.post(route('patients.store'));
+    form.patch(route('patients.update', props.patient.id));
 };
 </script>
 
 <template>
-    <Head title="Create Patient" />
+    <Head :title="`Edit Patient: ${patient.full_name}`" />
 
     <AuthenticatedLayout>
         <div class="max-w-3xl mx-auto space-y-6">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900">Ajouter un nouveau patient</h1>
+                <h1 class="text-2xl font-bold text-gray-900">Modifier le patient</h1>
                 <p class="mt-1 text-sm text-gray-500">
-                    Remplissez les informations du patient ci-dessous
+                    Modifier les informations du patient {{ patient.full_name }}
                 </p>
             </div>
 
@@ -126,7 +130,7 @@ const submit = () => {
                                 </div>
 
                                 <div class="sm:col-span-2">
-                                    <label class="label">Adresse</label>
+                                    <label class="label">Address</label>
                                     <textarea
                                         v-model="form.address"
                                         rows="3"
@@ -165,12 +169,12 @@ const submit = () => {
 
                         <!-- Medical Information -->
                         <div>
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">Informations médicales</h3>
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">Information médicale</h3>
                             <div class="space-y-6">
                                 <div>
                                     <label class="label">Groupe sanguin</label>
                                     <select v-model="form.blood_group" class="input">
-                                        <option value="">Groupe sanguin</option>
+                                        <option value="">Sélectionner le groupe sanguin</option>
                                         <option value="A+">A+</option>
                                         <option value="A-">A-</option>
                                         <option value="B+">B+</option>
@@ -207,15 +211,15 @@ const submit = () => {
 
                     <template #footer>
                         <div class="flex items-center justify-end space-x-4">
-                            <Link :href="route('patients.index')" class="btn-outline">
-                                Cancel
+                            <Link :href="route('patients.show', patient.id)" class="btn-outline">
+                                Annuler
                             </Link>
                             <button
                                 type="submit"
                                 class="btn-primary"
                                 :disabled="form.processing"
                             >
-                                Créer le patient
+                                Mettre à jour le patient
                             </button>
                         </div>
                     </template>
