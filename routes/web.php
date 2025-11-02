@@ -22,12 +22,27 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard', [
-    'stats' => [
-        'total_patients' => Patient::count(),
-        'appointments_today' => Appointment::whereDate('appointment_date', today())->count(),
-        'upcoming_appointments' => Appointment::where('appointment_date', '>=', now())->count(),
-        'completed_this_week' => Appointment::where('status', 'completed')->whereBetween('appointment_date', [now()->startOfWeek(), now()->endOfWeek()])->count(),
-    ]
+        'stats' => [
+            'total_patients' => Patient::count(),
+            'appointments_today' => Appointment::whereDate('appointment_date', today())->count(),
+            'upcoming_appointments' => Appointment::where('appointment_date', '>=', now())->count(),
+            'completed_this_week' => Appointment::where('status', 'completed')
+                ->whereBetween('appointment_date', [now()->startOfWeek(), now()->endOfWeek()])
+                ->count(),
+        ],
+        'todayAppointments' => Appointment::with(['patient', 'doctor'])
+            ->whereDate('appointment_date', today())
+            ->orderBy('appointment_date')
+            ->get(),
+        'upcomingAppointments' => Appointment::with(['patient', 'doctor'])
+            ->where('appointment_date', '>=', now())
+            ->orderBy('appointment_date')
+            ->take(5)
+            ->get(),
+        'recentPatients' => Patient::where('created_at', '>=', now()->subDays(7))
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get(),
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 

@@ -166,7 +166,8 @@ defineProps({
                                                 hour: '2-digit',
                                                 minute: '2-digit'
                                             }) }}
-                                            • Dr. {{ appointment.doctor.name }}
+                                            <!-- • Dr. {{ appointment.doctor.name }} -->
+                                            • {{ appointment.doctor.name }}
                                         </p>
                                     </div>
                                     <StatusBadge :status="appointment.status" />
@@ -191,6 +192,28 @@ defineProps({
 
                 <!-- Sidebar -->
                 <div class="space-y-6">
+                    <!-- Quick Actions -->
+                    <Card>
+                        <template #header>
+                            <h3 class="text-sm font-semibold text-gray-900">Actions rapides</h3>
+                        </template>
+
+                        <div class="space-y-2">
+                            <Link :href="route('patients.create')" class="btn-outline w-full justify-center">
+                                <UsersIcon class="h-5 w-5 mr-2" />
+                                Ajouter un patient
+                            </Link>
+                            <Link :href="route('appointments.create')" class="btn-primary w-full justify-center">
+                                <CalendarIcon class="h-5 w-5 mr-2" />
+                                Planifier un rendez-vous
+                            </Link>
+                            <!-- <Link :href="route('appointments.calendar')" class="btn-outline w-full justify-center">
+                                <CalendarIcon class="h-5 w-5 mr-2" />
+                                Voir le calendrier
+                            </Link> -->
+                        </div>
+                    </Card>
+
                     <!-- Upcoming Appointments -->
                     <Card>
                         <template #header>
@@ -272,7 +295,7 @@ defineProps({
                                     :href="route('patients.show', patient.id)"
                                     class="flex-1 text-sm font-medium text-gray-900 hover:text-medicare-600 truncate"
                                 >
-                                    {{ patient.full_name }}
+                                    {{ patient.first_name }} {{ patient.last_name }}
                                 </Link>
                             </div>
                             <Link
@@ -284,28 +307,6 @@ defineProps({
                         </div>
                         <div v-else>
                             <p class="text-sm text-gray-500">Aucun patient récent.</p>
-                        </div>
-                    </Card>
-
-                    <!-- Quick Actions -->
-                    <Card>
-                        <template #header>
-                            <h3 class="text-sm font-semibold text-gray-900">Actions rapides</h3>
-                        </template>
-
-                        <div class="space-y-2">
-                            <Link :href="route('patients.create')" class="btn-outline w-full justify-center">
-                                <UsersIcon class="h-5 w-5 mr-2" />
-                                Ajouter un patient
-                            </Link>
-                            <Link :href="route('appointments.create')" class="btn-primary w-full justify-center">
-                                <CalendarIcon class="h-5 w-5 mr-2" />
-                                Planifier un rendez-vous
-                            </Link>
-                            <Link :href="route('appointments.calendar')" class="btn-outline w-full justify-center">
-                                <CalendarIcon class="h-5 w-5 mr-2" />
-                                Voir le calendrier
-                            </Link>
                         </div>
                     </Card>
                 </div>

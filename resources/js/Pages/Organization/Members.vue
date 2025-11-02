@@ -53,7 +53,7 @@ const removeMember = (user) => {
                 </div>
                 <button @click="showInviteModal = true" class="btn-primary">
                     <PlusIcon class="h-5 w-5 mr-2" />
-                    Inviter un membre
+                    Ajouter un membre
                 </button>
             </div>
 
@@ -132,11 +132,11 @@ const removeMember = (user) => {
                 <div v-if="members.length === 0" class="text-center py-12">
                     <UserCircleIcon class="mx-auto h-12 w-12 text-gray-400" />
                     <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun membre</h3>
-                    <p class="mt-1 text-sm text-gray-500">Commencez par inviter un membre.</p>
+                    <p class="mt-1 text-sm text-gray-500">Commencez par Ajouter un membre.</p>
                     <div class="mt-6">
                         <button @click="showInviteModal = true" class="btn-primary">
                             <PlusIcon class="h-5 w-5 mr-2" />
-                            Inviter un membre
+                            Ajouter un membre
                         </button>
                     </div>
                 </div>

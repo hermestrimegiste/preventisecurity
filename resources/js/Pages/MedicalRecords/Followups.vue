@@ -35,7 +35,7 @@ const deletePatient = () => {
 </script>
 
 <template>
-    <Head :title="`Patient: ${patient.full_name}`" />
+    <Head :title="`Patient : ${patient.full_name}`" />
 
     <AuthenticatedLayout>
         <div class="space-y-6">
@@ -48,11 +48,11 @@ const deletePatient = () => {
                     <div>
                         <h1 class="text-2xl font-bold text-gray-900">{{ patient.full_name }}</h1>
                         <p class="text-sm text-gray-500 mt-1">
-                            <span class="capitalize">{{ patient.gender }}</span>
+                            <span class="capitalize">{{ patient.gender === 'male' ? 'Homme' : 'Femme' }}</span>
                             <span class="mx-2">•</span>
-                            {{ patient.age }} Ans
+                            {{ patient.age }} ans
                             <span class="mx-2">•</span>
-                            Patient ID: #{{ patient.id }}
+                            ID Patient : #{{ patient.id }}
                         </p>
                     </div>
                 </div>
@@ -77,7 +77,7 @@ const deletePatient = () => {
                     <!-- Contact Information -->
                     <Card>
                         <template #header>
-                            <h2 class="text-lg font-semibold text-gray-900">Informations de Contact</h2>
+                            <h2 class="text-lg font-semibold text-gray-900">Informations de contact</h2>
                         </template>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -124,14 +124,14 @@ const deletePatient = () => {
                     <!-- Medical Information -->
                     <Card>
                         <template #header>
-                            <h2 class="text-lg font-semibold text-gray-900">Informations Médicales</h2>
+                            <h2 class="text-lg font-semibold text-gray-900">Informations médicales</h2>
                         </template>
 
                         <div class="space-y-6">
                             <div v-if="patient.blood_group" class="flex items-start space-x-3">
                                 <BeakerIcon class="h-5 w-5 text-red-500 mt-0.5" />
                                 <div>
-                                    <p class="text-sm font-medium text-gray-500">Groupe Sanguin</p>
+                                    <p class="text-sm font-medium text-gray-500">Groupe sanguin</p>
                                     <p class="text-sm font-semibold text-gray-900 mt-1">{{ patient.blood_group }}</p>
                                 </div>
                             </div>
@@ -149,7 +149,7 @@ const deletePatient = () => {
                             <div v-if="patient.medical_history" class="flex items-start space-x-3">
                                 <HeartIcon class="h-5 w-5 text-blue-500 mt-0.5" />
                                 <div class="flex-1">
-                                    <p class="text-sm font-medium text-gray-500">Histoire Médicale</p>
+                                    <p class="text-sm font-medium text-gray-500">Antécédents médicaux</p>
                                     <div class="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                                         <p class="text-sm text-gray-900 whitespace-pre-line">{{ patient.medical_history }}</p>
                                     </div>
@@ -187,8 +187,7 @@ const deletePatient = () => {
                                     <div class="flex-1">
                                         <div class="flex items-center space-x-3">
                                             <p class="text-sm font-medium text-gray-900">
-                                                <!-- Dr. {{ appointment.doctor.name }} -->
-                                                {{ appointment.doctor.name }}
+                                                Dr. {{ appointment.doctor.name }}
                                             </p>
                                             <StatusBadge :status="appointment.status" />
                                         </div>
@@ -210,15 +209,15 @@ const deletePatient = () => {
                         </div>
                         <div v-else class="text-center py-12">
                             <CalendarIcon class="mx-auto h-12 w-12 text-gray-400" />
-                            <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun rendez-vous</h3>
-                            <p class="mt-1 text-sm text-gray-500">Programmez le premier rendez-vous pour ce patient.</p>
+                            <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun rendez-vous pour le moment</h3>
+                            <p class="mt-1 text-sm text-gray-500">Planifiez le premier rendez-vous pour ce patient.</p>
                             <div class="mt-6">
                                 <Link
                                     :href="route('appointments.create', { patient_id: patient.id })"
                                     class="btn-primary"
                                 >
                                     <CalendarIcon class="h-5 w-5 mr-2" />
-                                    Schedule Appointment
+                                    Planifier un rendez-vous
                                 </Link>
                             </div>
                         </div>
@@ -228,12 +227,12 @@ const deletePatient = () => {
                     <Card v-if="patient.medical_records && patient.medical_records.length > 0">
                         <template #header>
                             <div class="flex items-center justify-between">
-                                <h2 class="text-lg font-semibold text-gray-900">Fichiers médicaux</h2>
+                                <h2 class="text-lg font-semibold text-gray-900">Dossiers médicaux</h2>
                                 <Link
-                                    :href="route('patients.medical-records', patient.id)"
+                                    :href="route('patients.medicalrecords', patient.id)"
                                     class="text-sm font-medium text-medicare-600 hover:text-medicare-700"
                                 >
-                                    Voir tous
+                                    Voir tout
                                 </Link>
                             </div>
                         </template>
@@ -250,14 +249,13 @@ const deletePatient = () => {
                                             {{ record.diagnosis || record.chief_complaint }}
                                         </p>
                                         <p class="text-sm text-gray-500 mt-1">
-                                            <!-- Dr. {{ record.doctor.name }} -->
-                                            {{ record.doctor.name }}
+                                            Dr. {{ record.doctor.name }}
                                             <span class="mx-2">•</span>
                                             {{ new Date(record.created_at).toLocaleDateString() }}
                                         </p>
                                     </div>
                                     <Link
-                                        :href="route('medical-records.show', record.id)"
+                                        :href="route('medicalrecords.show', record.id)"
                                         class="btn-outline text-sm"
                                     >
                                         Voir
@@ -282,7 +280,7 @@ const deletePatient = () => {
                                     {{ patient.next_appointment.formatted_date_time }}
                                 </p>
                                 <p class="text-sm text-medicare-700 mt-1">
-                                    Avec  {{ patient.next_appointment.doctor.name }}
+                                    avec Dr. {{ patient.next_appointment.doctor.name }}
                                 </p>
                                 <p v-if="patient.next_appointment.reason" class="text-sm text-gray-600 mt-2">
                                     {{ patient.next_appointment.reason }}
@@ -305,11 +303,13 @@ const deletePatient = () => {
 
                         <div class="space-y-4">
                             <div class="flex items-center justify-between py-2 border-b border-gray-100">
-                                <span class="text-sm text-gray-600">Total rendez-vous</span>
-                                <span class="text-sm font-semibold text-gray-900">{{ patient.appointments?.length || 0 }}</span>
+                                <span class="text-sm text-gray-600">Total des rendez-vous</span>
+                                <span class="text-sm font-semibold text-gray-900">
+                                    {{ patient.appointments?.length || 0 }}
+                                </span>
                             </div>
                             <div class="flex items-center justify-between py-2 border-b border-gray-100">
-                                <span class="text-sm text-gray-600">Fichiers médicaux</span>
+                                <span class="text-sm text-gray-600">Dossiers médicaux</span>
                                 <span class="text-sm font-semibold text-gray-900">
                                     {{ patient.medical_records?.length || 0 }}
                                 </span>
@@ -335,15 +335,15 @@ const deletePatient = () => {
                                 class="btn-primary w-full justify-center"
                             >
                                 <CalendarIcon class="h-5 w-5 mr-2" />
-                                Nouveau rendez-vous
+                                Planifier un rendez-vous
                             </Link>
-                            <!-- <Link
-                                :href="route('patients.medical-records', patient.id)"
+                            <Link
+                                :href="route('patients.medicalrecords', patient.id)"
                                 class="btn-outline w-full justify-center"
                             >
                                 <DocumentTextIcon class="h-5 w-5 mr-2" />
-                                Voir les fichiers médicaux
-                            </Link> -->
+                                Voir les dossiers médicaux
+                            </Link>
                             <Link
                                 :href="route('patients.appointments', patient.id)"
                                 class="btn-outline w-full justify-center"
@@ -358,7 +358,7 @@ const deletePatient = () => {
         </div>
 
         <!-- Delete Confirmation Modal -->
-        <Modal :show="showDeleteModal" @close="showDeleteModal = false" title="Delete Patient">
+        <Modal :show="showDeleteModal" @close="showDeleteModal = false" title="Supprimer le patient">
             <div class="space-y-4">
                 <div class="flex items-start space-x-3">
                     <div class="flex-shrink-0">
@@ -366,10 +366,10 @@ const deletePatient = () => {
                     </div>
                     <div>
                         <p class="text-sm text-gray-900 font-medium">
-                            Voulez-vous vraiment supprimer {{ patient.full_name }}?
+                            Êtes-vous sûr de vouloir supprimer {{ patient.full_name }} ?
                         </p>
                         <p class="text-sm text-gray-500 mt-2">
-                            Cette action ne peut pas être annulée. Tous les rendez-vous et les fichiers médicaux associés seront également supprimés.
+                            Cette action est irréversible. Tous les rendez-vous et dossiers médicaux associés seront également supprimés.
                         </p>
                     </div>
                 </div>
@@ -381,7 +381,7 @@ const deletePatient = () => {
                         Annuler
                     </button>
                     <button @click="deletePatient" class="btn-danger">
-                        Oui, Supprimer le patient
+                        Oui, supprimer le patient
                     </button>
                 </div>
             </template>

@@ -44,10 +44,10 @@ const filterAppointments = () => {
                     </p>
                 </div>
                 <div class="flex space-x-4">
-                    <Link :href="route('appointments.calendar')" class="btn-outline">
+                    <!-- <Link :href="route('appointments.calendar')" class="btn-outline">
                         <CalendarIcon class="h-5 w-5 mr-2" />
                         Vue Calendrier
-                    </Link>
+                    </Link> -->
                     <Link :href="route('appointments.create')" class="btn-primary">
                         <PlusIcon class="h-5 w-5 mr-2" />
                         Nouveau Rendez-vous

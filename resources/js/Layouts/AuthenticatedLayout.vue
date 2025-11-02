@@ -37,7 +37,7 @@ const navigation = [
     { name: 'Dashboard', href: 'dashboard', icon: HomeIcon },
     { name: 'Patients', href: 'patients.index', icon: UsersIcon },
     { name: 'Rendez-vous', href: 'appointments.index', icon: CalendarIcon },
-    { name: 'Suivi', href: 'medical-records.follow-ups', icon: DocumentTextIcon },
+    // { name: 'Suivi', href: 'medical-records.follow-ups', icon: DocumentTextIcon }, //TODO
 ];
 
 const isCurrentRoute = (routeName) => {
