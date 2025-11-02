@@ -23,10 +23,10 @@ class MultiTenantIsolationTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
-        // Créer les rôles et permissions nécessaires
-        $this->artisan('db:seed', ['--class' => 'RolePermissionSeeder']);
-        
+
+        // create roles and permissions
+        //$this->artisan('db:seed', ['--class' => 'RolePermissionSeeder']);
+
         $this->orgA = Organization::factory()->create(['name' => 'Clinic A']);
         $this->orgB = Organization::factory()->create(['name' => 'Clinic B']);
 

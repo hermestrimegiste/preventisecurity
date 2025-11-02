@@ -11,9 +11,9 @@ This project demonstrates expertise in building complex, production-ready applic
 
 | Deliverable | URL |
 | :--- | :--- |
-| **Deployed Application** | **[https://medicare.aourisis.org]** |
-| **API Documentation (Swagger)** | **[https://medicare.aourisis.orgL]/api/documentation** |
-| **GitHub Repository** | **[https://github.com/hermestrimegiste/medicare]** |
+| **Deployed Application** | **[https://medicare.aourisis.org](https://medicare.aourisis.org)** |
+| **API Documentation (Swagger)** | **[https://medicare.aourisis.org/api/documentation](https://medicare.aourisis.org/api/documentation)** |
+| **GitHub Repository** | **[https://github.com/hermestrimegiste/medicare](https://github.com/hermestrimegiste/medicare)** |
 
 ---
 ## ✨ Features Implemented (MediCare - Option 2)
@@ -93,11 +93,14 @@ These instructions assume you have PHP (>= 8.2), Composer, and Node.js installed
 4.  **Configure Environment:**
     * Copy the example environment file: `cp .env.example .env`
     * Set your database credentials in `.env` (ensure it points to your PostgreSQL/MySQL server).
+    * Copy the example environment file to  `.env.testing` (ensure it points to your PostgreSQL/MySQL server).
     * Generate the application key: `php artisan key:generate`
 
 5.  **Run Migrations and Seed Data:**
     ```bash
     php artisan migrate --seed
+    php artisan migrate:fresh --seed --env=testing
+
     ```
     *(The seed script creates demo organizations and test users for immediate validation of multi-tenancy).*
 
