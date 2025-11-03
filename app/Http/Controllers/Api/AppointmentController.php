@@ -7,57 +7,11 @@ use App\Http\Requests\UpdateAppointmentRequest;
 use App\Models\Appointment;
 use App\Models\User;
 use Illuminate\Http\Request;
-use OpenApi\Annotations as OA;
-
-/**
- * @OA\Tag(
- *     name="Appointments",
- *     description="Endpoints for managing appointments"
- * )
- */
 
 class AppointmentController extends Controller
 {
     /**
-     * @OA\Get(
-     *     path="/api/appointments",
-     *     summary="List all appointments",
-     *     tags={"Appointments"},
-     *     security={{"bearerAuth": {}}},
-     *     @OA\Parameter(
-     *         name="status",
-     *         in="query",
-     *         description="Filter by status",
-     *         required=false,
-     *         @OA\Schema(type="string", enum={"scheduled", "completed", "cancelled"})
-     *     ),
-     *     @OA\Parameter(
-     *         name="doctor_id",
-     *         in="query",
-     *         description="Filter by doctor ID",
-     *         required=false,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="date",
-     *         in="query",
-     *         description="Filter by date (YYYY-MM-DD)",
-     *         required=false,
-     *         @OA\Schema(type="string", format="date")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="List of appointments",
-     *         @OA\JsonContent(
-     *             type="array",
-     *             @OA\Items(ref="#/components/schemas/Appointment")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthenticated"
-     *     )
-     * )
+     * Display a listing of the appointments.
      */
     public function index(Request $request)
     {
@@ -81,6 +35,9 @@ class AppointmentController extends Controller
         return response()->json($appointments);
     }
 
+    /**
+     * List upcoming appointments.
+     */
     public function upcoming()
     {
         $appointments = Appointment::with(['patient', 'doctor'])
@@ -90,6 +47,9 @@ class AppointmentController extends Controller
         return response()->json($appointments);
     }
 
+    /**
+     * List today's appointments.
+     */
     public function today()
     {
         $appointments = Appointment::with(['patient', 'doctor'])
@@ -100,6 +60,9 @@ class AppointmentController extends Controller
         return response()->json($appointments);
     }
 
+    /**
+     * Get appointments for calendar view.
+     */
     public function calendar(Request $request)
     {
         $startDate = $request->get('start', now()->startOfMonth());
@@ -112,6 +75,9 @@ class AppointmentController extends Controller
         return response()->json($appointments);
     }
 
+    /**
+     * Store a newly created appointment in storage.
+     */
     public function store(StoreAppointmentRequest $request)
     {
         $appointment = Appointment::create($request->validated());
@@ -120,6 +86,9 @@ class AppointmentController extends Controller
         return response()->json($appointment, 201);
     }
 
+    /**
+     * Display the specified appointment.
+     */
     public function show(Appointment $appointment)
     {
         $appointment->load(['patient', 'doctor', 'medicalRecord']);
@@ -127,26 +96,37 @@ class AppointmentController extends Controller
         return response()->json($appointment);
     }
 
+    /**
+     * Update the specified appointment in storage.
+     */
     public function update(UpdateAppointmentRequest $request, Appointment $appointment)
     {
+        $this->authorize('update', $appointment);
+        
         $appointment->update($request->validated());
         $appointment->load(['patient', 'doctor']);
 
         return response()->json($appointment);
     }
 
+    /**
+     * Remove the specified appointment from storage.
+     */
     public function destroy(Appointment $appointment)
     {
-        $this->authorize('delete appointments');
+        $this->authorize('delete', $appointment);
 
         $appointment->delete();
 
         return response()->json(null, 204);
     }
 
+    /**
+     * Cancel the specified appointment.
+     */
     public function cancel(Appointment $appointment)
     {
-        $this->authorize('cancel appointments');
+        $this->authorize('cancel', $appointment);
 
         if (!$appointment->canBeCancelled()) {
             return response()->json([
@@ -159,8 +139,13 @@ class AppointmentController extends Controller
         return response()->json($appointment);
     }
 
+    /**
+     * Mark the specified appointment as completed.
+     */
     public function complete(Appointment $appointment)
     {
+        $this->authorize('complete', $appointment);
+        
         if (!$appointment->canBeCompleted()) {
             return response()->json([
                 'message' => 'This appointment cannot be marked as completed.'
@@ -172,6 +157,9 @@ class AppointmentController extends Controller
         return response()->json($appointment);
     }
 
+    /**
+     * Get upcoming appointments for a specific doctor.
+     */
     public function byDoctor(User $doctor)
     {
         $appointments = Appointment::with('patient')

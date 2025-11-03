@@ -7,37 +7,11 @@ use App\Http\Requests\UpdateMedicalRecordRequest;
 use App\Models\MedicalRecord;
 use App\Models\Appointment;
 use App\Models\Patient;
-use OpenApi\Annotations as OA;
-
-/**
- * @OA\Tag(
- *     name="Medical Records",
- *     description="Endpoints for managing medical records"
- * )
- */
 
 class MedicalRecordController extends Controller
 {
     /**
-     * @OA\Post(
-     *     path="/api/medical-records",
-     *     summary="Create a new medical record",
-     *     tags={"Medical Records"},
-     *     security={{"bearerAuth": {}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/StoreMedicalRecordRequest")
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Medical record created successfully",
-     *         @OA\JsonContent(ref="#/components/schemas/MedicalRecord")
-     *     ),
-     *     @OA\Response(
-     *         response=422,
-     *         description="Validation error"
-     *     )
-     * )
+     * Store a newly created medical record in storage.
      */
     public function store(StoreMedicalRecordRequest $request)
     {
@@ -56,6 +30,9 @@ class MedicalRecordController extends Controller
         return response()->json($record, 201);
     }
 
+    /**
+     * Display the specified medical record.
+     */
     public function show(MedicalRecord $medicalRecord)
     {
         $medicalRecord->load(['patient', 'appointment', 'doctor']);
@@ -63,23 +40,34 @@ class MedicalRecordController extends Controller
         return response()->json($medicalRecord);
     }
 
+    /**
+     * Update the specified medical record in storage.
+     */
     public function update(UpdateMedicalRecordRequest $request, MedicalRecord $medicalRecord)
     {
+        $this->authorize('update', $medicalRecord);
+        
         $medicalRecord->update($request->validated());
         $medicalRecord->load(['patient', 'appointment', 'doctor']);
 
         return response()->json($medicalRecord);
     }
 
+    /**
+     * Remove the specified medical record from storage.
+     */
     public function destroy(MedicalRecord $medicalRecord)
     {
-        $this->authorize('delete medical records');
+        $this->authorize('delete', $medicalRecord);
 
         $medicalRecord->delete();
 
         return response()->json(null, 204);
     }
 
+    /**
+     * Get medical records for a specific patient.
+     */
     public function byPatient(Patient $patient)
     {
         $records = $patient->medicalRecords()
@@ -90,6 +78,9 @@ class MedicalRecordController extends Controller
         return response()->json($records);
     }
 
+    /**
+     * Get upcoming and overdue follow-ups.
+     */
     public function followUps()
     {
         $upcoming = MedicalRecord::with(['patient', 'doctor'])

@@ -44,6 +44,7 @@ return [
                  * Absolute paths to directory containing the swagger annotations are stored.
                  */
                 'annotations' => [
+                    base_path('app/Http/Controllers/Api/Docs'),
                     base_path('app'),
                 ],
             ],
@@ -217,14 +218,19 @@ return [
                 */
             ],
             'security' => [
-                // Examples of Securities
-                // [
-                //     'oauth2_security_example' => [
-                //         'read',
-                //         'write'
-                //     ],
-                //     'passport' => []
-                // ],
+                /*
+                 * Examples of Securities
+                 */
+                [
+                    /*
+                    'oauth2_security_example' => [
+                        'read',
+                        'write'
+                    ],
+
+                    'passport' => []
+                    */
+                ],
             ],
         ],
 

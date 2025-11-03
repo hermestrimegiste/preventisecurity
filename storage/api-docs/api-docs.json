@@ -2,9 +2,8 @@
     "openapi": "3.0.0",
     "info": {
         "title": "MediCare API Documentation",
-        "description": "API documentation for MediCare - A healthcare management system",
+        "description": "Documentation de l'API MediCare",
         "contact": {
-            "name": "MediCare Support",
             "email": "support@medicare.com"
         },
         "license": {
@@ -15,18 +14,19 @@
     },
     "servers": [
         {
-            "url": "http://localhost:8000",
+            "url": "/",
             "description": "API Server"
         }
     ],
     "paths": {
+        "/api": {},
         "/api/appointments": {
             "get": {
                 "tags": [
                     "Appointments"
                 ],
                 "summary": "List all appointments",
-                "operationId": "812c4f15927f3d0e3e959538a6f1104b",
+                "operationId": "24e3be4f40b7466815c2ebd09460de6e",
                 "parameters": [
                     {
                         "name": "status",
@@ -34,12 +34,7 @@
                         "description": "Filter by status",
                         "required": false,
                         "schema": {
-                            "type": "string",
-                            "enum": [
-                                "scheduled",
-                                "completed",
-                                "cancelled"
-                            ]
+                            "type": "string"
                         }
                     },
                     {
@@ -68,6 +63,129 @@
                         "content": {
                             "application/json": {
                                 "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Appointment"
+                                            }
+                                        },
+                                        "links": {
+                                            "$ref": "#/components/schemas/PaginationLinks"
+                                        },
+                                        "meta": {
+                                            "$ref": "#/components/schemas/PaginationMeta"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Appointments"
+                ],
+                "summary": "Create a new appointment",
+                "operationId": "30697662f5966eb7a82e48d4b54cc379",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreAppointmentRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Appointment created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Appointment"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/appointments/upcoming": {
+            "get": {
+                "tags": [
+                    "Appointments"
+                ],
+                "summary": "List upcoming appointments",
+                "operationId": "635939f7773574e144ff62b73a511494",
+                "responses": {
+                    "200": {
+                        "description": "List of upcoming appointments",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Appointment"
+                                            }
+                                        },
+                                        "links": {
+                                            "$ref": "#/components/schemas/PaginationLinks"
+                                        },
+                                        "meta": {
+                                            "$ref": "#/components/schemas/PaginationMeta"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/appointments/today": {
+            "get": {
+                "tags": [
+                    "Appointments"
+                ],
+                "summary": "List today's appointments",
+                "operationId": "3124feac014d5c0940fc85fb1ae57a32",
+                "responses": {
+                    "200": {
+                        "description": "List of today's appointments",
+                        "content": {
+                            "application/json": {
+                                "schema": {
                                     "type": "array",
                                     "items": {
                                         "$ref": "#/components/schemas/Appointment"
@@ -87,61 +205,44 @@
                 ]
             }
         },
-        "/api/medical-records": {
-            "post": {
-                "tags": [
-                    "Medical Records"
-                ],
-                "summary": "Create a new medical record",
-                "operationId": "562a9bb1a3476fa3cd18ea0d9f82b4e4",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/StoreMedicalRecordRequest"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Medical record created successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/MedicalRecord"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation error"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/api/organizations": {
+        "/api/appointments/calendar": {
             "get": {
                 "tags": [
-                    "Organizations"
+                    "Appointments"
                 ],
-                "summary": "List all organizations for the authenticated user",
-                "operationId": "a6f3e52e9b7995087fc40990424c2977",
+                "summary": "Get appointments for calendar view",
+                "operationId": "89f9176060c9a4fa453fde4fd954caea",
+                "parameters": [
+                    {
+                        "name": "start",
+                        "in": "query",
+                        "description": "Start date (YYYY-MM-DD)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "end",
+                        "in": "query",
+                        "description": "End date (YYYY-MM-DD)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "List of organizations",
+                        "description": "List of appointments for the specified date range",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#/components/schemas/Organization"
+                                        "$ref": "#/components/schemas/Appointment"
                                     }
                                 }
                             }
@@ -158,18 +259,1095 @@
                 ]
             }
         },
+        "/api/appointments/{appointment}": {
+            "get": {
+                "tags": [
+                    "Appointments"
+                ],
+                "summary": "Get a specific appointment",
+                "operationId": "7065c416900aab35288d5e4ad716f155",
+                "parameters": [
+                    {
+                        "name": "appointment",
+                        "in": "path",
+                        "description": "ID of the appointment",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Appointment details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Appointment"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Appointment not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Appointments"
+                ],
+                "summary": "Update an appointment",
+                "operationId": "63d07d1e0d83b35bb20f7e9e381690c7",
+                "parameters": [
+                    {
+                        "name": "appointment",
+                        "in": "path",
+                        "description": "ID of the appointment to update",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateAppointmentRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Appointment updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Appointment"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized action"
+                    },
+                    "404": {
+                        "description": "Appointment not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Appointments"
+                ],
+                "summary": "Delete an appointment",
+                "operationId": "eb64f279de78315f370355b73696a4a5",
+                "parameters": [
+                    {
+                        "name": "appointment",
+                        "in": "path",
+                        "description": "ID of the appointment to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Appointment deleted successfully"
+                    },
+                    "403": {
+                        "description": "Unauthorized action"
+                    },
+                    "404": {
+                        "description": "Appointment not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/appointments/{appointment}/cancel": {
+            "post": {
+                "tags": [
+                    "Appointments"
+                ],
+                "summary": "Cancel an appointment",
+                "operationId": "ed130c94fdddf060bd6cbd5e83f02426",
+                "parameters": [
+                    {
+                        "name": "appointment",
+                        "in": "path",
+                        "description": "ID of the appointment to cancel",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Appointment cancelled successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Appointment"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized action"
+                    },
+                    "404": {
+                        "description": "Appointment not found"
+                    },
+                    "422": {
+                        "description": "Appointment cannot be cancelled"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/appointments/{appointment}/complete": {
+            "post": {
+                "tags": [
+                    "Appointments"
+                ],
+                "summary": "Mark an appointment as completed",
+                "operationId": "b6b0caed4283c6f775ac06ef43e48122",
+                "parameters": [
+                    {
+                        "name": "appointment",
+                        "in": "path",
+                        "description": "ID of the appointment to mark as completed",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Appointment marked as completed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Appointment"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized action"
+                    },
+                    "404": {
+                        "description": "Appointment not found"
+                    },
+                    "422": {
+                        "description": "Appointment cannot be marked as completed"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/doctors/{doctor}/appointments": {
+            "get": {
+                "tags": [
+                    "Appointments"
+                ],
+                "summary": "Get upcoming appointments for a specific doctor",
+                "operationId": "b91372dcdcbaae9fd87e5a5c8d2ed790",
+                "parameters": [
+                    {
+                        "name": "doctor",
+                        "in": "path",
+                        "description": "ID of the doctor",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of upcoming appointments for the doctor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Appointment"
+                                            }
+                                        },
+                                        "links": {
+                                            "$ref": "#/components/schemas/PaginationLinks"
+                                        },
+                                        "meta": {
+                                            "$ref": "#/components/schemas/PaginationMeta"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Doctor not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Authentifier un utilisateur",
+                "operationId": "dc0e4244ecd9f36c4be32f05fcd980ae",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "utilisateur@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "motdepasse"
+                                    },
+                                    "remember": {
+                                        "type": "boolean",
+                                        "example": false
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Connexion réussie",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Connexion réussie"
+                                        },
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Erreur de validation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Les données fournies ne sont pas valides."
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "email": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "Ces identifiants ne correspondent pas à nos enregistrements."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Trop de tentatives de connexion",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Trop de tentatives de connexion. Veuillez réessayer dans 60 secondes."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Déconnecter l'utilisateur actuel",
+                "operationId": "d0d656a1c874a802676f87bcabddd947",
+                "responses": {
+                    "204": {
+                        "description": "Déconnexion réussie"
+                    },
+                    "401": {
+                        "description": "Non authentifié",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Non authentifié."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Récupérer les informations de l'utilisateur connecté",
+                "operationId": "7bd3a6c2aa1b217bb6364f09df90b4e9",
+                "responses": {
+                    "200": {
+                        "description": "Informations de l'utilisateur",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/csrf-token": {
+            "post": {
+                "tags": [
+                    "Authentification"
+                ],
+                "summary": "Obtenir un jeton CSRF",
+                "description": "Récupère un jeton CSRF valide après authentification réussie",
+                "operationId": "getCsrfToken",
+                "requestBody": {
+                    "description": "Identifiants de l'utilisateur",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "utilisateur@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "motdepasse"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Jeton CSRF récupéré avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "csrf_token": {
+                                            "type": "string",
+                                            "example": "votre-token-csrf"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Identifiants invalides",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Les identifiants fournis sont incorrects."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Erreur de validation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Les données fournies ne sont pas valides."
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "email": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "Le champ email est obligatoire."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/medical-records": {
+            "post": {
+                "tags": [
+                    "Dossiers Médicaux"
+                ],
+                "summary": "Créer un nouveau dossier médical",
+                "operationId": "656b1336fe95e0ae32920c83f62a2dbf",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreMedicalRecordRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Dossier médical créé avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MedicalRecord"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Erreur de validation"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/medical-records/{medicalRecord}": {
+            "get": {
+                "tags": [
+                    "Dossiers Médicaux"
+                ],
+                "summary": "Afficher un dossier médical spécifique",
+                "operationId": "b255711758c86d31cb403a7a8add2a65",
+                "parameters": [
+                    {
+                        "name": "medicalRecord",
+                        "in": "path",
+                        "description": "ID du dossier médical",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Dossier médical récupéré avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MedicalRecord"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Dossier médical non trouvé"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Dossiers Médicaux"
+                ],
+                "summary": "Mettre à jour un dossier médical",
+                "operationId": "b6b2568aee0c74f95d45f783d6a1da63",
+                "parameters": [
+                    {
+                        "name": "medicalRecord",
+                        "in": "path",
+                        "description": "ID du dossier médical",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateMedicalRecordRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Dossier médical mis à jour avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MedicalRecord"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Action non autorisée"
+                    },
+                    "404": {
+                        "description": "Dossier médical non trouvé"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Dossiers Médicaux"
+                ],
+                "summary": "Supprimer un dossier médical",
+                "operationId": "67e371aff13ae70aeadfc8490788d814",
+                "parameters": [
+                    {
+                        "name": "medicalRecord",
+                        "in": "path",
+                        "description": "ID du dossier médical",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Dossier médical supprimé avec succès"
+                    },
+                    "403": {
+                        "description": "Action non autorisée"
+                    },
+                    "404": {
+                        "description": "Dossier médical non trouvé"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/patients/{patient}/medical-records": {
+            "get": {
+                "tags": [
+                    "Dossiers Médicaux"
+                ],
+                "summary": "Lister les dossiers médicaux d'un patient",
+                "operationId": "d127a8e3bc64ca6cdba601c0ddeb7597",
+                "parameters": [
+                    {
+                        "name": "patient",
+                        "in": "path",
+                        "description": "ID du patient",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des dossiers médicaux",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/MedicalRecord"
+                                            }
+                                        },
+                                        "links": {
+                                            "$ref": "#/components/schemas/PaginationLinks"
+                                        },
+                                        "meta": {
+                                            "$ref": "#/components/schemas/PaginationMeta"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/medical-records/follow-ups": {
+            "get": {
+                "tags": [
+                    "Dossiers Médicaux"
+                ],
+                "summary": "Lister les suivis à venir et en retard",
+                "operationId": "5a03fef77ab28555e6e68e188cad4210",
+                "responses": {
+                    "200": {
+                        "description": "Liste des suivis",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "upcoming": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/MedicalRecord"
+                                                    }
+                                                },
+                                                "links": {
+                                                    "$ref": "#/components/schemas/PaginationLinks"
+                                                },
+                                                "meta": {
+                                                    "$ref": "#/components/schemas/PaginationMeta"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "overdue": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/MedicalRecord"
+                                                    }
+                                                },
+                                                "links": {
+                                                    "$ref": "#/components/schemas/PaginationLinks"
+                                                },
+                                                "meta": {
+                                                    "$ref": "#/components/schemas/PaginationMeta"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/organizations": {
+            "get": {
+                "tags": [
+                    "Organisations"
+                ],
+                "summary": "Lister les organisations de l'utilisateur",
+                "operationId": "17dcd88a5f399b2d85b02dc456439388",
+                "responses": {
+                    "200": {
+                        "description": "Liste des organisations",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Organization"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Organisations"
+                ],
+                "summary": "Créer une nouvelle organisation",
+                "operationId": "0fc8421152caf5a38af81ea4beee5d57",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreOrganizationRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Organisation créée avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Organization"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Droits insuffisants pour créer une organisation"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/organizations/current": {
+            "get": {
+                "tags": [
+                    "Organisations"
+                ],
+                "summary": "Obtenir l'organisation courante",
+                "operationId": "34ccd029f57a3d9f9c7574c2cbc6e3e5",
+                "responses": {
+                    "200": {
+                        "description": "Organisation courante",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Organization"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/organizations/{organization}": {
+            "get": {
+                "tags": [
+                    "Organisations"
+                ],
+                "summary": "Afficher une organisation spécifique",
+                "operationId": "4cc0446d4d9b4875d60d6ddbda51ada9",
+                "parameters": [
+                    {
+                        "name": "organization",
+                        "in": "path",
+                        "description": "ID de l'organisation",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Détails de l'organisation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Organization"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Accès refusé à cette organisation"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Organisations"
+                ],
+                "summary": "Mettre à jour une organisation",
+                "operationId": "885bfba2e7420f896a851361b2c7d49c",
+                "parameters": [
+                    {
+                        "name": "organization",
+                        "in": "path",
+                        "description": "ID de l'organisation",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateOrganizationRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Organisation mise à jour avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Organization"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Droits insuffisants pour modifier cette organisation"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Organisations"
+                ],
+                "summary": "Supprimer une organisation",
+                "operationId": "b5e20dd9b835fecf4f7f0bc09ba7da9e",
+                "parameters": [
+                    {
+                        "name": "organization",
+                        "in": "path",
+                        "description": "ID de l'organisation à supprimer",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Organisation supprimée avec succès"
+                    },
+                    "403": {
+                        "description": "Droits insuffisants pour supprimer cette organisation"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/organizations/switch/{organization}": {
+            "post": {
+                "tags": [
+                    "Organisations"
+                ],
+                "summary": "Changer d'organisation courante",
+                "operationId": "bf1eb2484b2cf029aeda2cfc6b2cf644",
+                "parameters": [
+                    {
+                        "name": "organization",
+                        "in": "path",
+                        "description": "ID de l'organisation vers laquelle basculer",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Changement d'organisation réussi",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "organization": {
+                                            "$ref": "#/components/schemas/Organization"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Accès refusé à cette organisation"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/patients": {
             "get": {
                 "tags": [
                     "Patients"
                 ],
-                "summary": "List all patients",
-                "operationId": "0df0d65f049161931654c3e188ca8f93",
+                "summary": "Lister les patients",
+                "operationId": "ec4f2518ca359ae72eb15c955855dda5",
                 "parameters": [
                     {
                         "name": "search",
                         "in": "query",
-                        "description": "Search term",
+                        "description": "Terme de recherche",
                         "required": false,
                         "schema": {
                             "type": "string"
@@ -178,7 +1356,7 @@
                     {
                         "name": "gender",
                         "in": "query",
-                        "description": "Filter by gender",
+                        "description": "Filtrer par genre",
                         "required": false,
                         "schema": {
                             "type": "string",
@@ -188,11 +1366,109 @@
                                 "other"
                             ]
                         }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Nombre d'éléments par page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 20
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "List of patients",
+                        "description": "Liste des patients",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Patient"
+                                            }
+                                        },
+                                        "links": {
+                                            "$ref": "#/components/schemas/PaginationLinks"
+                                        },
+                                        "meta": {
+                                            "$ref": "#/components/schemas/PaginationMeta"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Patients"
+                ],
+                "summary": "Créer un nouveau patient",
+                "operationId": "6face82b39bfac813245f7ada490d800",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StorePatientRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Patient créé avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Patient"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Erreur de validation"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/patients/search": {
+            "get": {
+                "tags": [
+                    "Patients"
+                ],
+                "summary": "Rechercher des patients",
+                "operationId": "f60302bfd595589e96eae1e137b22fc2",
+                "parameters": [
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "description": "Terme de recherche (minimum 2 caractères)",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Résultats de la recherche",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -200,6 +1476,182 @@
                                     "items": {
                                         "$ref": "#/components/schemas/Patient"
                                     }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Erreur de validation"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/patients/{patient}": {
+            "get": {
+                "tags": [
+                    "Patients"
+                ],
+                "summary": "Afficher un patient spécifique",
+                "operationId": "098cc3431a2f9577e8465100b78c25bb",
+                "parameters": [
+                    {
+                        "name": "patient",
+                        "in": "path",
+                        "description": "ID du patient",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Détails du patient",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Patient"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Patient non trouvé"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Patients"
+                ],
+                "summary": "Mettre à jour un patient",
+                "operationId": "60d1b42ff41e9a7e36f81c9ed49e4202",
+                "parameters": [
+                    {
+                        "name": "patient",
+                        "in": "path",
+                        "description": "ID du patient",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdatePatientRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Patient mis à jour avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Patient"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Patient non trouvé"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Patients"
+                ],
+                "summary": "Supprimer un patient",
+                "operationId": "4efb1ed9e008a3ad2c9cc07ef7c0e469",
+                "parameters": [
+                    {
+                        "name": "patient",
+                        "in": "path",
+                        "description": "ID du patient à supprimer",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Patient supprimé avec succès"
+                    },
+                    "403": {
+                        "description": "Action non autorisée"
+                    },
+                    "404": {
+                        "description": "Patient non trouvé"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/patients/{patient}/appointments": {
+            "get": {
+                "tags": [
+                    "Patients"
+                ],
+                "summary": "Lister les rendez-vous d'un patient",
+                "operationId": "63d6fccaeb15d6bae733fee85a19a8e7",
+                "parameters": [
+                    {
+                        "name": "patient",
+                        "in": "path",
+                        "description": "ID du patient",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des rendez-vous",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Appointment"
+                                            }
+                                        },
+                                        "links": {
+                                            "$ref": "#/components/schemas/PaginationLinks"
+                                        },
+                                        "meta": {
+                                            "$ref": "#/components/schemas/PaginationMeta"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
@@ -216,18 +1668,8 @@
     "components": {
         "schemas": {
             "Appointment": {
-                "required": [
-                    "patient_id",
-                    "doctor_id",
-                    "appointment_date",
-                    "duration_minutes"
-                ],
                 "properties": {
                     "id": {
-                        "type": "integer",
-                        "example": 1
-                    },
-                    "organization_id": {
                         "type": "integer",
                         "example": 1
                     },
@@ -241,30 +1683,18 @@
                     },
                     "appointment_date": {
                         "type": "string",
-                        "format": "date-time",
-                        "example": "2023-01-01 14:00:00"
-                    },
-                    "duration_minutes": {
-                        "type": "integer",
-                        "example": 30
+                        "format": "date-time"
                     },
                     "status": {
                         "type": "string",
-                        "enum": [
-                            "scheduled",
-                            "completed",
-                            "cancelled"
-                        ],
                         "example": "scheduled"
                     },
                     "reason": {
                         "type": "string",
-                        "example": "Routine checkup",
                         "nullable": true
                     },
                     "notes": {
                         "type": "string",
-                        "example": "Patient has allergies to penicillin",
                         "nullable": true
                     },
                     "created_at": {
@@ -275,13 +1705,8 @@
                         "type": "string",
                         "format": "date-time"
                     },
-                    "deleted_at": {
-                        "type": "string",
-                        "format": "date-time",
-                        "nullable": true
-                    },
                     "patient": {
-                        "$ref": "#/components/schemas/Patient"
+                        "$ref": "#/components/schemas/User"
                     },
                     "doctor": {
                         "$ref": "#/components/schemas/User"
@@ -293,8 +1718,7 @@
                 "required": [
                     "patient_id",
                     "doctor_id",
-                    "appointment_date",
-                    "duration_minutes"
+                    "appointment_date"
                 ],
                 "properties": {
                     "patient_id": {
@@ -307,34 +1731,14 @@
                     },
                     "appointment_date": {
                         "type": "string",
-                        "format": "date-time",
-                        "example": "2023-01-01 14:00:00"
-                    },
-                    "duration_minutes": {
-                        "type": "integer",
-                        "maximum": 240,
-                        "minimum": 15,
-                        "example": 30
-                    },
-                    "status": {
-                        "type": "string",
-                        "enum": [
-                            "scheduled",
-                            "completed",
-                            "cancelled"
-                        ],
-                        "example": "scheduled"
+                        "format": "date-time"
                     },
                     "reason": {
                         "type": "string",
-                        "maxLength": 255,
-                        "example": "Routine checkup",
                         "nullable": true
                     },
                     "notes": {
                         "type": "string",
-                        "maxLength": 1000,
-                        "example": "Patient has allergies to penicillin",
                         "nullable": true
                     }
                 },
@@ -344,68 +1748,167 @@
                 "properties": {
                     "patient_id": {
                         "type": "integer",
-                        "example": 1,
-                        "nullable": true
+                        "example": 1
                     },
                     "doctor_id": {
                         "type": "integer",
-                        "example": 1,
-                        "nullable": true
+                        "example": 1
                     },
                     "appointment_date": {
                         "type": "string",
-                        "format": "date-time",
-                        "example": "2023-01-01 14:00:00",
-                        "nullable": true
-                    },
-                    "duration_minutes": {
-                        "type": "integer",
-                        "maximum": 240,
-                        "minimum": 15,
-                        "example": 30,
-                        "nullable": true
+                        "format": "date-time"
                     },
                     "status": {
                         "type": "string",
-                        "enum": [
-                            "scheduled",
-                            "completed",
-                            "cancelled"
-                        ],
-                        "example": "completed",
-                        "nullable": true
+                        "example": "completed"
                     },
                     "reason": {
                         "type": "string",
-                        "maxLength": 255,
-                        "example": "Routine checkup",
                         "nullable": true
                     },
                     "notes": {
                         "type": "string",
-                        "maxLength": 1000,
-                        "example": "Patient has allergies to penicillin",
                         "nullable": true
                     }
                 },
                 "type": "object"
             },
-            "MedicalRecord": {
-                "required": [
-                    "patient_id",
-                    "appointment_id",
-                    "chief_complaint"
-                ],
+            "User": {
                 "properties": {
                     "id": {
                         "type": "integer",
                         "example": 1
                     },
-                    "organization_id": {
+                    "name": {
+                        "type": "string",
+                        "example": "John Doe"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "john@example.com"
+                    },
+                    "email_verified_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-01-01T12:00:00Z",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-01-01T12:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-01-01T12:00:00Z"
+                    }
+                },
+                "type": "object"
+            },
+            "LoginRequest": {
+                "required": [
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "user@example.com"
+                    },
+                    "password": {
+                        "type": "string",
+                        "format": "password",
+                        "example": "password"
+                    },
+                    "remember": {
+                        "type": "boolean",
+                        "example": false
+                    }
+                },
+                "type": "object"
+            },
+            "LoginResponse": {
+                "properties": {
+                    "token": {
+                        "type": "string",
+                        "example": "1|abcdef123456"
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/User"
+                    }
+                },
+                "type": "object"
+            },
+            "PaginationLinks": {
+                "properties": {
+                    "first": {
+                        "type": "string",
+                        "example": "http://example.com/api/resource?page=1"
+                    },
+                    "last": {
+                        "type": "string",
+                        "example": "http://example.com/api/resource?page=5"
+                    },
+                    "prev": {
+                        "type": "string",
+                        "example": "http://example.com/api/resource?page=1",
+                        "nullable": true
+                    },
+                    "next": {
+                        "type": "string",
+                        "example": "http://example.com/api/resource?page=3",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "PaginationMeta": {
+                "properties": {
+                    "current_page": {
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "from": {
+                        "type": "integer",
+                        "example": 11
+                    },
+                    "last_page": {
+                        "type": "integer",
+                        "example": 5
+                    },
+                    "path": {
+                        "type": "string",
+                        "example": "http://example.com/api/resource"
+                    },
+                    "per_page": {
+                        "type": "integer",
+                        "example": 10
+                    },
+                    "to": {
+                        "type": "integer",
+                        "example": 20
+                    },
+                    "total": {
+                        "type": "integer",
+                        "example": 50
+                    }
+                },
+                "type": "object"
+            },
+            "MedicalRecord": {
+                "properties": {
+                    "id": {
                         "type": "integer",
                         "example": 1
                     },
                     "patient_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "doctor_id": {
                         "type": "integer",
                         "example": 1
                     },
@@ -414,48 +1917,23 @@
                         "example": 1,
                         "nullable": true
                     },
-                    "doctor_id": {
-                        "type": "integer",
-                        "example": 1
-                    },
-                    "chief_complaint": {
-                        "type": "string",
-                        "example": "Headache and fever"
-                    },
                     "diagnosis": {
                         "type": "string",
-                        "example": "Viral infection",
-                        "nullable": true
+                        "example": "Diagnostic principal"
                     },
-                    "examination_notes": {
+                    "treatment": {
                         "type": "string",
-                        "example": "Patient presents with high fever and headache",
-                        "nullable": true
+                        "example": "Traitement prescrit"
                     },
-                    "treatment_plan": {
+                    "notes": {
                         "type": "string",
-                        "example": "Prescribed paracetamol and rest",
-                        "nullable": true
-                    },
-                    "prescription": {
-                        "type": "string",
-                        "example": "Paracetamol 500mg every 6 hours as needed",
-                        "nullable": true
-                    },
-                    "lab_tests": {
-                        "type": "string",
-                        "example": "CBC, COVID-19 test",
-                        "nullable": true
-                    },
-                    "follow_up_instructions": {
-                        "type": "string",
-                        "example": "Return if symptoms worsen",
+                        "example": "Notes supplémentaires",
                         "nullable": true
                     },
                     "follow_up_date": {
                         "type": "string",
                         "format": "date",
-                        "example": "2023-02-01",
+                        "example": "2023-12-31",
                         "nullable": true
                     },
                     "created_at": {
@@ -478,8 +1956,7 @@
                                 "$ref": "#/components/schemas/Appointment"
                             }
                         ],
-                        "nullable": true,
-                        "description": "Related appointment"
+                        "nullable": true
                     }
                 },
                 "type": "object"
@@ -487,8 +1964,7 @@
             "StoreMedicalRecordRequest": {
                 "required": [
                     "patient_id",
-                    "appointment_id",
-                    "chief_complaint"
+                    "diagnosis"
                 ],
                 "properties": {
                     "patient_id": {
@@ -500,51 +1976,23 @@
                         "example": 1,
                         "nullable": true
                     },
-                    "chief_complaint": {
-                        "type": "string",
-                        "maxLength": 1000,
-                        "example": "Headache and fever"
-                    },
                     "diagnosis": {
                         "type": "string",
-                        "maxLength": 1000,
-                        "example": "Viral infection",
-                        "nullable": true
+                        "example": "Diagnostic principal"
                     },
-                    "examination_notes": {
+                    "treatment": {
                         "type": "string",
-                        "maxLength": 2000,
-                        "example": "Patient presents with high fever and headache",
-                        "nullable": true
+                        "example": "Traitement prescrit"
                     },
-                    "treatment_plan": {
+                    "notes": {
                         "type": "string",
-                        "maxLength": 2000,
-                        "example": "Prescribed paracetamol and rest",
-                        "nullable": true
-                    },
-                    "prescription": {
-                        "type": "string",
-                        "maxLength": 2000,
-                        "example": "Paracetamol 500mg every 6 hours as needed",
-                        "nullable": true
-                    },
-                    "lab_tests": {
-                        "type": "string",
-                        "maxLength": 1000,
-                        "example": "CBC, COVID-19 test",
-                        "nullable": true
-                    },
-                    "follow_up_instructions": {
-                        "type": "string",
-                        "maxLength": 1000,
-                        "example": "Return if symptoms worsen",
+                        "example": "Notes supplémentaires",
                         "nullable": true
                     },
                     "follow_up_date": {
                         "type": "string",
                         "format": "date",
-                        "example": "2023-02-01",
+                        "example": "2023-12-31",
                         "nullable": true
                     }
                 },
@@ -552,93 +2000,100 @@
             },
             "UpdateMedicalRecordRequest": {
                 "properties": {
-                    "chief_complaint": {
-                        "type": "string",
-                        "maxLength": 1000,
-                        "example": "Headache and fever",
-                        "nullable": true
-                    },
                     "diagnosis": {
                         "type": "string",
-                        "maxLength": 1000,
-                        "example": "Viral infection",
-                        "nullable": true
+                        "example": "Diagnostic mis à jour"
                     },
-                    "examination_notes": {
+                    "treatment": {
                         "type": "string",
-                        "maxLength": 2000,
-                        "example": "Patient presents with high fever and headache",
-                        "nullable": true
+                        "example": "Nouveau traitement"
                     },
-                    "treatment_plan": {
+                    "notes": {
                         "type": "string",
-                        "maxLength": 2000,
-                        "example": "Prescribed paracetamol and rest",
-                        "nullable": true
-                    },
-                    "prescription": {
-                        "type": "string",
-                        "maxLength": 2000,
-                        "example": "Paracetamol 500mg every 6 hours as needed",
-                        "nullable": true
-                    },
-                    "lab_tests": {
-                        "type": "string",
-                        "maxLength": 1000,
-                        "example": "CBC, COVID-19 test",
-                        "nullable": true
-                    },
-                    "follow_up_instructions": {
-                        "type": "string",
-                        "maxLength": 1000,
-                        "example": "Return if symptoms worsen",
+                        "example": "Notes mises à jour",
                         "nullable": true
                     },
                     "follow_up_date": {
                         "type": "string",
                         "format": "date",
-                        "example": "2023-02-01",
+                        "example": "2024-01-31",
                         "nullable": true
                     }
                 },
                 "type": "object"
             },
-            "Organization": {
-                "required": [
-                    "name"
-                ],
+            "Patient": {
                 "properties": {
                     "id": {
                         "type": "integer",
                         "example": 1
                     },
-                    "name": {
+                    "first_name": {
                         "type": "string",
-                        "example": "Acme Clinic"
+                        "example": "John"
                     },
-                    "slug": {
+                    "last_name": {
                         "type": "string",
-                        "example": "acme-clinic"
+                        "example": "Doe"
                     },
                     "email": {
                         "type": "string",
                         "format": "email",
-                        "example": "info@acmeclinic.com",
-                        "nullable": true
+                        "example": "john.doe@example.com"
                     },
                     "phone": {
                         "type": "string",
                         "example": "+1234567890",
                         "nullable": true
                     },
+                    "birth_date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "1980-01-01"
+                    },
+                    "gender": {
+                        "type": "string",
+                        "enum": [
+                            "male",
+                            "female",
+                            "other"
+                        ],
+                        "example": "male"
+                    },
                     "address": {
                         "type": "string",
-                        "example": "123 Medical Center Dr, City, Country",
+                        "example": "123 Main St, City",
                         "nullable": true
                     },
-                    "is_active": {
-                        "type": "boolean",
-                        "example": true
+                    "city": {
+                        "type": "string",
+                        "example": "Paris",
+                        "nullable": true
+                    },
+                    "postal_code": {
+                        "type": "string",
+                        "example": "75000",
+                        "nullable": true
+                    },
+                    "country": {
+                        "type": "string",
+                        "example": "France",
+                        "nullable": true
+                    },
+                    "blood_type": {
+                        "type": "string",
+                        "example": "A+",
+                        "nullable": true
+                    },
+                    "allergies": {
+                        "type": "string",
+                        "example": "Pollen, Penicillin",
+                        "nullable": true
+                    },
+                    "notes": {
+                        "type": "string",
+                        "example": "Patient sous surveillance",
+                        "nullable": true
                     },
                     "created_at": {
                         "type": "string",
@@ -647,11 +2102,58 @@
                     "updated_at": {
                         "type": "string",
                         "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "Organization": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
                     },
-                    "deleted_at": {
+                    "name": {
                         "type": "string",
-                        "format": "date-time",
+                        "example": "Clinique du Nord"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "contact@clinique-nord.fr",
                         "nullable": true
+                    },
+                    "phone": {
+                        "type": "string",
+                        "example": "+33123456789",
+                        "nullable": true
+                    },
+                    "address": {
+                        "type": "string",
+                        "example": "1 Rue de la Paix",
+                        "nullable": true
+                    },
+                    "city": {
+                        "type": "string",
+                        "example": "Paris",
+                        "nullable": true
+                    },
+                    "postal_code": {
+                        "type": "string",
+                        "example": "75001",
+                        "nullable": true
+                    },
+                    "country": {
+                        "type": "string",
+                        "example": "France",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
                     }
                 },
                 "type": "object"
@@ -663,26 +2165,22 @@
                 "properties": {
                     "name": {
                         "type": "string",
-                        "maxLength": 255,
-                        "example": "Acme Clinic"
+                        "example": "Clinique du Nord"
                     },
                     "email": {
                         "type": "string",
                         "format": "email",
-                        "maxLength": 255,
-                        "example": "info@acmeclinic.com",
+                        "example": "contact@clinique-nord.fr",
                         "nullable": true
                     },
                     "phone": {
                         "type": "string",
-                        "maxLength": 20,
-                        "example": "+1234567890",
+                        "example": "+33123456789",
                         "nullable": true
                     },
                     "address": {
                         "type": "string",
-                        "maxLength": 500,
-                        "example": "123 Medical Center Dr, City, Country",
+                        "example": "1 Rue de la Paix",
                         "nullable": true
                     }
                 },
@@ -692,167 +2190,22 @@
                 "properties": {
                     "name": {
                         "type": "string",
-                        "maxLength": 255,
-                        "example": "Acme Clinic",
-                        "nullable": true
+                        "example": "Clinique du Nord"
                     },
                     "email": {
                         "type": "string",
                         "format": "email",
-                        "maxLength": 255,
-                        "example": "info@acmeclinic.com",
+                        "example": "contact@clinique-nord.fr",
                         "nullable": true
                     },
                     "phone": {
                         "type": "string",
-                        "maxLength": 20,
-                        "example": "+1234567890",
+                        "example": "+33123456789",
                         "nullable": true
                     },
                     "address": {
                         "type": "string",
-                        "maxLength": 500,
-                        "example": "123 Medical Center Dr, City, Country",
-                        "nullable": true
-                    },
-                    "is_active": {
-                        "type": "boolean",
-                        "example": true,
-                        "nullable": true
-                    }
-                },
-                "type": "object"
-            },
-            "User": {
-                "required": [
-                    "name",
-                    "email"
-                ],
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "example": 1
-                    },
-                    "name": {
-                        "type": "string",
-                        "example": "John Doe"
-                    },
-                    "email": {
-                        "type": "string",
-                        "format": "email",
-                        "example": "john.doe@example.com"
-                    },
-                    "email_verified_at": {
-                        "type": "string",
-                        "format": "date-time",
-                        "nullable": true
-                    },
-                    "current_organization_id": {
-                        "type": "integer",
-                        "example": 1,
-                        "nullable": true
-                    },
-                    "created_at": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "updated_at": {
-                        "type": "string",
-                        "format": "date-time"
-                    }
-                },
-                "type": "object"
-            },
-            "Patient": {
-                "required": [
-                    "first_name",
-                    "last_name",
-                    "date_of_birth",
-                    "gender",
-                    "phone"
-                ],
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "example": 1
-                    },
-                    "organization_id": {
-                        "type": "integer",
-                        "example": 1
-                    },
-                    "first_name": {
-                        "type": "string",
-                        "example": "John"
-                    },
-                    "last_name": {
-                        "type": "string",
-                        "example": "Doe"
-                    },
-                    "date_of_birth": {
-                        "type": "string",
-                        "format": "date",
-                        "example": "1990-01-15"
-                    },
-                    "gender": {
-                        "type": "string",
-                        "enum": [
-                            "male",
-                            "female",
-                            "other"
-                        ],
-                        "example": "male"
-                    },
-                    "email": {
-                        "type": "string",
-                        "format": "email",
-                        "example": "john.doe@example.com",
-                        "nullable": true
-                    },
-                    "phone": {
-                        "type": "string",
-                        "example": "+1234567890"
-                    },
-                    "address": {
-                        "type": "string",
-                        "example": "123 Main St, City",
-                        "nullable": true
-                    },
-                    "emergency_contact_name": {
-                        "type": "string",
-                        "example": "Jane Doe",
-                        "nullable": true
-                    },
-                    "emergency_contact_phone": {
-                        "type": "string",
-                        "example": "+1987654321",
-                        "nullable": true
-                    },
-                    "medical_history": {
-                        "type": "string",
-                        "example": "Hypertension, Diabetes",
-                        "nullable": true
-                    },
-                    "allergies": {
-                        "type": "string",
-                        "example": "Penicillin, Nuts",
-                        "nullable": true
-                    },
-                    "blood_group": {
-                        "type": "string",
-                        "example": "A+",
-                        "nullable": true
-                    },
-                    "created_at": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "updated_at": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "deleted_at": {
-                        "type": "string",
-                        "format": "date-time",
+                        "example": "1 Rue de la Paix",
                         "nullable": true
                     }
                 },
@@ -864,7 +2217,8 @@
                     "last_name",
                     "date_of_birth",
                     "gender",
-                    "phone"
+                    "phone",
+                    "organization_id"
                 ],
                 "properties": {
                     "first_name": {
@@ -878,7 +2232,7 @@
                     "date_of_birth": {
                         "type": "string",
                         "format": "date",
-                        "example": "1990-01-15"
+                        "example": "1980-01-01"
                     },
                     "gender": {
                         "type": "string",
@@ -904,6 +2258,21 @@
                         "example": "123 Main St, City",
                         "nullable": true
                     },
+                    "city": {
+                        "type": "string",
+                        "example": "Paris",
+                        "nullable": true
+                    },
+                    "postal_code": {
+                        "type": "string",
+                        "example": "75000",
+                        "nullable": true
+                    },
+                    "country": {
+                        "type": "string",
+                        "example": "France",
+                        "nullable": true
+                    },
                     "emergency_contact_name": {
                         "type": "string",
                         "example": "Jane Doe",
@@ -914,20 +2283,44 @@
                         "example": "+1987654321",
                         "nullable": true
                     },
-                    "medical_history": {
+                    "occupation": {
                         "type": "string",
-                        "example": "Hypertension, Diabetes",
+                        "example": "Développeur",
+                        "nullable": true
+                    },
+                    "notes": {
+                        "type": "string",
+                        "example": "Notes sur le patient",
+                        "nullable": true
+                    },
+                    "blood_type": {
+                        "type": "string",
+                        "enum": [
+                            "A+",
+                            "A-",
+                            "B+",
+                            "B-",
+                            "AB+",
+                            "AB-",
+                            "O+",
+                            "O-"
+                        ],
+                        "example": "A+",
                         "nullable": true
                     },
                     "allergies": {
                         "type": "string",
-                        "example": "Penicillin, Nuts",
+                        "example": "Pollen, Penicillin",
                         "nullable": true
                     },
-                    "blood_group": {
+                    "medications": {
                         "type": "string",
-                        "example": "A+",
+                        "example": "Paracétamol, Ibuprofène",
                         "nullable": true
+                    },
+                    "organization_id": {
+                        "type": "integer",
+                        "example": 1
                     }
                 },
                 "type": "object"
@@ -1003,6 +2396,9 @@
         "securitySchemes": {
             "bearerAuth": {
                 "type": "http",
+                "description": "Utilisez le token JWT obtenu après authentification",
+                "name": "Authorization",
+                "in": "header",
                 "bearerFormat": "JWT",
                 "scheme": "bearer"
             }
@@ -1014,16 +2410,24 @@
             "description": "Endpoints for managing appointments"
         },
         {
-            "name": "Medical Records",
-            "description": "Endpoints for managing medical records"
+            "name": "Authentication",
+            "description": "Endpoints d'authentification"
         },
         {
-            "name": "Organizations",
-            "description": "Endpoints for managing organizations"
+            "name": "Dossiers Médicaux",
+            "description": "Gestion des dossiers médicaux des patients"
+        },
+        {
+            "name": "Organisations",
+            "description": "Gestion des organisations et des changements de contexte"
         },
         {
             "name": "Patients",
-            "description": "Endpoints for managing patients"
+            "description": "Gestion des patients et de leurs dossiers médicaux"
+        },
+        {
+            "name": "Authentification",
+            "description": "Authentification"
         }
     ]
 }

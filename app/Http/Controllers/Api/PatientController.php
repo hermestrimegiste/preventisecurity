@@ -6,47 +6,9 @@ use App\Http\Requests\StorePatientRequest;
 use App\Http\Requests\UpdatePatientRequest;
 use App\Models\Patient;
 use Illuminate\Http\Request;
-use OpenApi\Annotations as OA;
-
-/**
- * @OA\Tag(
- *     name="Patients",
- *     description="Endpoints for managing patients"
- * )
- */
 
 class PatientController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/api/patients",
-     *     summary="List all patients",
-     *     tags={"Patients"},
-     *     security={{"bearerAuth": {}}},
-     *     @OA\Parameter(
-     *         name="search",
-     *         in="query",
-     *         description="Search term",
-     *         required=false,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="gender",
-     *         in="query",
-     *         description="Filter by gender",
-     *         required=false,
-     *         @OA\Schema(type="string", enum={"male", "female", "other"})
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="List of patients",
-     *         @OA\JsonContent(
-     *             type="array",
-     *             @OA\Items(ref="#/components/schemas/Patient")
-     *         )
-     *     )
-     * )
-     */
     public function index(Request $request)
     {
         $query = Patient::with(['latestAppointment', 'nextAppointment']);
@@ -68,6 +30,10 @@ class PatientController extends Controller
 
     public function search(Request $request)
     {
+        $request->validate([
+            'q' => 'required|string|min:2',
+        ]);
+
         $query = Patient::query();
 
         if ($request->has('q')) {
@@ -113,7 +79,7 @@ class PatientController extends Controller
 
     public function destroy(Patient $patient)
     {
-        $this->authorize('delete patients');
+        $this->authorize('delete', $patient);
 
         $patient->delete();
 

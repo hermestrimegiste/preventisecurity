@@ -4,36 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\Organization;
 use Illuminate\Http\Request;
-use OpenApi\Annotations as OA;
-
-/**
- * @OA\Tag(
- *     name="Organizations",
- *     description="Endpoints for managing organizations"
- * )
- */
 
 class OrganizationController extends Controller
 {
     /**
-     * @OA\Get(
-     *     path="/api/organizations",
-     *     summary="List all organizations for the authenticated user",
-     *     tags={"Organizations"},
-     *     security={{"bearerAuth": {}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="List of organizations",
-     *         @OA\JsonContent(
-     *             type="array",
-     *             @OA\Items(ref="#/components/schemas/Organization")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthenticated"
-     *     )
-     * )
+     * List all organizations for the authenticated user.
      */
     public function index()
     {
@@ -42,6 +17,9 @@ class OrganizationController extends Controller
         return response()->json($organizations);
     }
 
+    /**
+     * Get the current organization of the authenticated user.
+     */
     public function current()
     {
         $organization = auth()->user()->currentOrganization;
@@ -49,6 +27,9 @@ class OrganizationController extends Controller
         return response()->json($organization);
     }
 
+    /**
+     * Display the specified organization.
+     */
     public function show(Organization $organization)
     {
         if (!auth()->user()->belongsToOrganization($organization->id)) {
@@ -58,6 +39,9 @@ class OrganizationController extends Controller
         return response()->json($organization);
     }
 
+    /**
+     * Switch to a different organization.
+     */
     public function switch(Organization $organization)
     {
         if (!auth()->user()->belongsToOrganization($organization->id)) {
@@ -72,6 +56,9 @@ class OrganizationController extends Controller
         ]);
     }
 
+    /**
+     * Store a newly created organization in storage.
+     */
     public function store(Request $request)
     {
         $this->authorize('manage organizations');
@@ -88,6 +75,9 @@ class OrganizationController extends Controller
         return response()->json($organization, 201);
     }
 
+    /**
+     * Update the specified organization in storage.
+     */
     public function update(Request $request, Organization $organization)
     {
         $this->authorize('manage organizations');
@@ -104,6 +94,9 @@ class OrganizationController extends Controller
         return response()->json($organization);
     }
 
+    /**
+     * Remove the specified organization from storage.
+     */
     public function destroy(Organization $organization)
     {
         $this->authorize('manage organizations');

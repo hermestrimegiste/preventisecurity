@@ -4,6 +4,31 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * @OA\Schema(
+ *     schema="StorePatientRequest",
+ *     type="object",
+ *     required={"first_name", "last_name", "date_of_birth", "gender", "phone", "organization_id"},
+ *     @OA\Property(property="first_name", type="string", example="John"),
+ *     @OA\Property(property="last_name", type="string", example="Doe"),
+ *     @OA\Property(property="date_of_birth", type="string", format="date", example="1980-01-01"),
+ *     @OA\Property(property="gender", type="string", enum={"male", "female", "other"}, example="male"),
+ *     @OA\Property(property="email", type="string", format="email", nullable=true, example="john.doe@example.com"),
+ *     @OA\Property(property="phone", type="string", example="+1234567890"),
+ *     @OA\Property(property="address", type="string", nullable=true, example="123 Main St, City"),
+ *     @OA\Property(property="city", type="string", nullable=true, example="Paris"),
+ *     @OA\Property(property="postal_code", type="string", nullable=true, example="75000"),
+ *     @OA\Property(property="country", type="string", nullable=true, example="France"),
+ *     @OA\Property(property="emergency_contact_name", type="string", nullable=true, example="Jane Doe"),
+ *     @OA\Property(property="emergency_contact_phone", type="string", nullable=true, example="+1987654321"),
+ *     @OA\Property(property="occupation", type="string", nullable=true, example="Développeur"),
+ *     @OA\Property(property="notes", type="string", nullable=true, example="Notes sur le patient"),
+ *     @OA\Property(property="blood_type", type="string", nullable=true, enum={"A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"}, example="A+"),
+ *     @OA\Property(property="allergies", type="string", nullable=true, example="Pollen, Penicillin"),
+ *     @OA\Property(property="medications", type="string", nullable=true, example="Paracétamol, Ibuprofène"),
+ *     @OA\Property(property="organization_id", type="integer", example=1)
+ * )
+ */
 class StorePatientRequest extends FormRequest
 {
     /**
