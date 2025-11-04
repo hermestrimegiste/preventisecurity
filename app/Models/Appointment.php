@@ -91,4 +91,28 @@ class Appointment extends Model
     {
         return $this->appointment_date->copy()->addMinutes($this->duration_minutes);
     }
+
+    public function canBeCancelled(): bool
+    {
+        return $this->isUpcoming() && $this->status === 'scheduled';
+    }
+
+    public function canBeCompleted(): bool
+    {
+        return $this->isUpcoming() && $this->status === 'scheduled';
+    }
+
+    public function cancel()
+    {
+        $this->update([
+            'status' => 'cancelled',
+        ]);
+    }
+
+    public function markAsCompleted()
+    {
+        $this->update([
+            'status' => 'completed',
+        ]);
+    }
 }
