@@ -16,7 +16,7 @@ This project demonstrates expertise in building complex, production-ready applic
 | **GitHub Repository** | **[https://github.com/hermestrimegiste/medicare](https://github.com/hermestrimegiste/medicare)** |
 
 ---
-## ✨ Features Implemented (MediCare - Option 2)
+## ✨ Features Implemented (MediCare)
 
 ### Core Multi-Tenancy
 * **Organization Isolation:** All core data (Patients, Appointments, MedicalRecords) is strictly isolated by `organization_id` using **Laravel Global Scopes** applied to the Eloquent models.
