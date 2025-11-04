@@ -7,7 +7,7 @@ use OpenApi\Annotations as OA;
 /**
  * @OA\Tag(
  *     name="Patients",
- *     description="Gestion des patients et de leurs dossiers médicaux"
+ *     description="Patient management and medical records"
  * )
  */
 class PatientDoc
@@ -15,33 +15,33 @@ class PatientDoc
     /**
      * @OA\Get(
      *     path="/api/patients",
-     *     summary="Lister les patients",
+     *     summary="List patients",
      *     tags={"Patients"},
      *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="search",
      *         in="query",
-     *         description="Terme de recherche",
+     *         description="Search term",
      *         required=false,
      *         @OA\Schema(type="string")
      *     ),
      *     @OA\Parameter(
      *         name="gender",
      *         in="query",
-     *         description="Filtrer par genre",
+     *         description="Filter by gender",
      *         required=false,
      *         @OA\Schema(type="string", enum={"male", "female", "other"})
      *     ),
      *     @OA\Parameter(
      *         name="per_page",
      *         in="query",
-     *         description="Nombre d'éléments par page",
+     *         description="Items per page",
      *         required=false,
      *         @OA\Schema(type="integer", default=20)
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Liste des patients",
+     *         description="List of patients",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Patient")),
@@ -56,19 +56,19 @@ class PatientDoc
     /**
      * @OA\Get(
      *     path="/api/patients/search",
-     *     summary="Rechercher des patients",
+     *     summary="Search patients",
      *     tags={"Patients"},
      *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="q",
      *         in="query",
-     *         description="Terme de recherche (minimum 2 caractères)",
+     *         description="Search term (minimum 2 characters)",
      *         required=true,
      *         @OA\Schema(type="string")
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Résultats de la recherche",
+     *         description="Search results",
      *         @OA\JsonContent(
      *             type="array",
      *             @OA\Items(ref="#/components/schemas/Patient")
@@ -76,7 +76,7 @@ class PatientDoc
      *     ),
      *     @OA\Response(
      *         response=422,
-     *         description="Erreur de validation"
+     *         description="Validation error"
      *     )
      * )
      */
@@ -85,7 +85,7 @@ class PatientDoc
     /**
      * @OA\Post(
      *     path="/api/patients",
-     *     summary="Créer un nouveau patient",
+     *     summary="Create a new patient",
      *     tags={"Patients"},
      *     security={{"bearerAuth": {}}},
      *     @OA\RequestBody(
@@ -94,12 +94,12 @@ class PatientDoc
      *     ),
      *     @OA\Response(
      *         response=201,
-     *         description="Patient créé avec succès",
+     *         description="Patient created successfully",
      *         @OA\JsonContent(ref="#/components/schemas/Patient")
      *     ),
      *     @OA\Response(
      *         response=422,
-     *         description="Erreur de validation"
+     *         description="Validation error"
      *     )
      * )
      */
@@ -108,24 +108,24 @@ class PatientDoc
     /**
      * @OA\Get(
      *     path="/api/patients/{patient}",
-     *     summary="Afficher un patient spécifique",
+     *     summary="Get a specific patient",
      *     tags={"Patients"},
      *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="patient",
      *         in="path",
      *         required=true,
-     *         description="ID du patient",
+     *         description="Patient ID",
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Détails du patient",
+     *         description="Patient details",
      *         @OA\JsonContent(ref="#/components/schemas/Patient")
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Patient non trouvé"
+     *         description="Patient not found"
      *     )
      * )
      */
@@ -134,14 +134,14 @@ class PatientDoc
     /**
      * @OA\Put(
      *     path="/api/patients/{patient}",
-     *     summary="Mettre à jour un patient",
+     *     summary="Update a patient",
      *     tags={"Patients"},
      *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="patient",
      *         in="path",
      *         required=true,
-     *         description="ID du patient",
+     *         description="Patient ID",
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\RequestBody(
@@ -150,12 +150,12 @@ class PatientDoc
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Patient mis à jour avec succès",
+     *         description="Patient updated successfully",
      *         @OA\JsonContent(ref="#/components/schemas/Patient")
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Patient non trouvé"
+     *         description="Patient not found"
      *     )
      * )
      */
@@ -164,27 +164,27 @@ class PatientDoc
     /**
      * @OA\Delete(
      *     path="/api/patients/{patient}",
-     *     summary="Supprimer un patient",
+     *     summary="Delete a patient",
      *     tags={"Patients"},
      *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="patient",
      *         in="path",
      *         required=true,
-     *         description="ID du patient à supprimer",
+     *         description="Patient ID to delete",
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Response(
      *         response=204,
-     *         description="Patient supprimé avec succès"
+     *         description="Patient deleted successfully"
      *     ),
      *     @OA\Response(
      *         response=403,
-     *         description="Action non autorisée"
+     *         description="Unauthorized action"
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Patient non trouvé"
+     *         description="Patient not found"
      *     )
      * )
      */
@@ -193,7 +193,7 @@ class PatientDoc
     /**
      * @OA\Get(
      *     path="/api/patients/{patient}/appointments",
-     *     summary="Lister les rendez-vous d'un patient",
+     *     summary="List patient's appointments",
      *     tags={"Patients"},
      *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(

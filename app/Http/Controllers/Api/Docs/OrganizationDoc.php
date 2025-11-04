@@ -6,8 +6,8 @@ use OpenApi\Annotations as OA;
 
 /**
  * @OA\Tag(
- *     name="Organisations",
- *     description="Gestion des organisations et des changements de contexte"
+ *     name="Organizations",
+ *     description="Organization and context switching management"
  * )
  */
 class OrganizationDoc
@@ -15,12 +15,12 @@ class OrganizationDoc
     /**
      * @OA\Get(
      *     path="/api/organizations",
-     *     summary="Lister les organisations de l'utilisateur",
-     *     tags={"Organisations"},
+     *     summary="List user's organizations",
+     *     tags={"Organizations"},
      *     security={{"bearerAuth": {}}},
      *     @OA\Response(
      *         response=200,
-     *         description="Liste des organisations",
+     *         description="List of organizations",
      *         @OA\JsonContent(
      *             type="array",
      *             @OA\Items(ref="#/components/schemas/Organization")
@@ -33,12 +33,12 @@ class OrganizationDoc
     /**
      * @OA\Get(
      *     path="/api/organizations/current",
-     *     summary="Obtenir l'organisation courante",
-     *     tags={"Organisations"},
+     *     summary="Get current organization",
+     *     tags={"Organizations"},
      *     security={{"bearerAuth": {}}},
      *     @OA\Response(
      *         response=200,
-     *         description="Organisation courante",
+     *         description="Current organization",
      *         @OA\JsonContent(ref="#/components/schemas/Organization")
      *     )
      * )
@@ -48,24 +48,24 @@ class OrganizationDoc
     /**
      * @OA\Get(
      *     path="/api/organizations/{organization}",
-     *     summary="Afficher une organisation spécifique",
-     *     tags={"Organisations"},
+     *     summary="Show a specific organization",
+     *     tags={"Organizations"},
      *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="organization",
      *         in="path",
      *         required=true,
-     *         description="ID de l'organisation",
+     *         description="Organization ID",
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Détails de l'organisation",
+     *         description="Organization details",
      *         @OA\JsonContent(ref="#/components/schemas/Organization")
      *     ),
      *     @OA\Response(
      *         response=403,
-     *         description="Accès refusé à cette organisation"
+     *         description="Access denied to this organization"
      *     )
      * )
      */
@@ -74,19 +74,19 @@ class OrganizationDoc
     /**
      * @OA\Post(
      *     path="/api/organizations/switch/{organization}",
-     *     summary="Changer d'organisation courante",
-     *     tags={"Organisations"},
+     *     summary="Switch current organization",
+     *     tags={"Organizations"},
      *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="organization",
      *         in="path",
      *         required=true,
-     *         description="ID de l'organisation vers laquelle basculer",
+     *         description="ID of the organization to switch to",
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Changement d'organisation réussi",
+     *         description="Organization switched successfully",
      *         @OA\JsonContent(
      *             @OA\Property(property="message", type="string"),
      *             @OA\Property(property="organization", ref="#/components/schemas/Organization")
@@ -94,7 +94,7 @@ class OrganizationDoc
      *     ),
      *     @OA\Response(
      *         response=403,
-     *         description="Accès refusé à cette organisation"
+     *         description="Access denied to this organization"
      *     )
      * )
      */
@@ -103,8 +103,8 @@ class OrganizationDoc
     /**
      * @OA\Post(
      *     path="/api/organizations",
-     *     summary="Créer une nouvelle organisation",
-     *     tags={"Organisations"},
+     *     summary="Create a new organization",
+     *     tags={"Organizations"},
      *     security={{"bearerAuth": {}}},
      *     @OA\RequestBody(
      *         required=true,
@@ -112,12 +112,12 @@ class OrganizationDoc
      *     ),
      *     @OA\Response(
      *         response=201,
-     *         description="Organisation créée avec succès",
+     *         description="Organization created successfully",
      *         @OA\JsonContent(ref="#/components/schemas/Organization")
      *     ),
      *     @OA\Response(
      *         response=403,
-     *         description="Droits insuffisants pour créer une organisation"
+     *         description="Insufficient permissions to create an organization"
      *     )
      * )
      */
@@ -126,14 +126,14 @@ class OrganizationDoc
     /**
      * @OA\Put(
      *     path="/api/organizations/{organization}",
-     *     summary="Mettre à jour une organisation",
-     *     tags={"Organisations"},
+     *     summary="Update an organization",
+     *     tags={"Organizations"},
      *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="organization",
      *         in="path",
      *         required=true,
-     *         description="ID de l'organisation",
+     *         description="Organization ID",
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\RequestBody(
@@ -142,12 +142,12 @@ class OrganizationDoc
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Organisation mise à jour avec succès",
+     *         description="Organization updated successfully",
      *         @OA\JsonContent(ref="#/components/schemas/Organization")
      *     ),
      *     @OA\Response(
      *         response=403,
-     *         description="Droits insuffisants pour modifier cette organisation"
+     *         description="Insufficient permissions to update this organization"
      *     )
      * )
      */
@@ -156,23 +156,23 @@ class OrganizationDoc
     /**
      * @OA\Delete(
      *     path="/api/organizations/{organization}",
-     *     summary="Supprimer une organisation",
-     *     tags={"Organisations"},
+     *     summary="Delete an organization",
+     *     tags={"Organizations"},
      *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="organization",
      *         in="path",
      *         required=true,
-     *         description="ID de l'organisation à supprimer",
+     *         description="ID of the organization to delete",
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Response(
      *         response=204,
-     *         description="Organisation supprimée avec succès"
+     *         description="Organization deleted successfully"
      *     ),
      *     @OA\Response(
      *         response=403,
-     *         description="Droits insuffisants pour supprimer cette organisation"
+     *         description="Insufficient permissions to delete this organization"
      *     )
      * )
      */

@@ -7,7 +7,7 @@ use OpenApi\Annotations as OA;
 /**
  * @OA\Tag(
  *     name="Appointments",
- *     description="Endpoints for managing appointments"
+ *     description="Endpoints for managing appointments.."
  * )
  */
 class AppointmentDoc

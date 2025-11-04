@@ -6,10 +6,11 @@ use App\Http\Controllers\Api\PatientController;
 use App\Http\Controllers\Api\AppointmentController;
 use App\Http\Controllers\Api\MedicalRecordController;
 use App\Http\Controllers\Api\OrganizationController;
-use App\Http\Controllers\Api\CsrfTokenController;
+use App\Http\Controllers\Api\AuthController;
 
 // Public routes
-Route::post('/csrf-token', [CsrfTokenController::class, 'getCsrfToken']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
 
 // Protected routes
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

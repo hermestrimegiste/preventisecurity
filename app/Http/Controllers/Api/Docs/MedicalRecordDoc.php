@@ -6,8 +6,8 @@ use OpenApi\Annotations as OA;
 
 /**
  * @OA\Tag(
- *     name="Dossiers Médicaux",
- *     description="Gestion des dossiers médicaux des patients"
+ *     name="Medical Records",
+ *     description="Patient medical records management"
  * )
  */
 class MedicalRecordDoc
@@ -15,8 +15,8 @@ class MedicalRecordDoc
     /**
      * @OA\Post(
      *     path="/api/medical-records",
-     *     summary="Créer un nouveau dossier médical",
-     *     tags={"Dossiers Médicaux"},
+     *     summary="Create a new medical record",
+     *     tags={"Medical Records"},
      *     security={{"bearerAuth": {}}},
      *     @OA\RequestBody(
      *         required=true,
@@ -24,12 +24,12 @@ class MedicalRecordDoc
      *     ),
      *     @OA\Response(
      *         response=201,
-     *         description="Dossier médical créé avec succès",
+     *         description="Medical record created successfully",
      *         @OA\JsonContent(ref="#/components/schemas/MedicalRecord")
      *     ),
      *     @OA\Response(
      *         response=422,
-     *         description="Erreur de validation"
+     *         description="Validation error"
      *     )
      * )
      */
@@ -38,24 +38,24 @@ class MedicalRecordDoc
     /**
      * @OA\Get(
      *     path="/api/medical-records/{medicalRecord}",
-     *     summary="Afficher un dossier médical spécifique",
-     *     tags={"Dossiers Médicaux"},
+     *     summary="Get a specific medical record",
+     *     tags={"Medical Records"},
      *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="medicalRecord",
      *         in="path",
      *         required=true,
-     *         description="ID du dossier médical",
+     *         description="Medical record ID",
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Dossier médical récupéré avec succès",
+     *         description="Medical record retrieved successfully",
      *         @OA\JsonContent(ref="#/components/schemas/MedicalRecord")
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Dossier médical non trouvé"
+     *         description="Medical record not found"
      *     )
      * )
      */
@@ -64,14 +64,14 @@ class MedicalRecordDoc
     /**
      * @OA\Put(
      *     path="/api/medical-records/{medicalRecord}",
-     *     summary="Mettre à jour un dossier médical",
-     *     tags={"Dossiers Médicaux"},
+     *     summary="Update a medical record",
+     *     tags={"Medical Records"},
      *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="medicalRecord",
      *         in="path",
      *         required=true,
-     *         description="ID du dossier médical",
+     *         description="Medical record ID",
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\RequestBody(
@@ -80,16 +80,16 @@ class MedicalRecordDoc
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Dossier médical mis à jour avec succès",
+     *         description="Medical record updated successfully",
      *         @OA\JsonContent(ref="#/components/schemas/MedicalRecord")
      *     ),
      *     @OA\Response(
      *         response=403,
-     *         description="Action non autorisée"
+     *         description="Unauthorized action"
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Dossier médical non trouvé"
+     *         description="Medical record not found"
      *     )
      * )
      */
@@ -98,27 +98,27 @@ class MedicalRecordDoc
     /**
      * @OA\Delete(
      *     path="/api/medical-records/{medicalRecord}",
-     *     summary="Supprimer un dossier médical",
-     *     tags={"Dossiers Médicaux"},
+     *     summary="Delete a medical record",
+     *     tags={"Medical Records"},
      *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="medicalRecord",
      *         in="path",
      *         required=true,
-     *         description="ID du dossier médical",
+     *         description="Medical record ID",
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Response(
      *         response=204,
-     *         description="Dossier médical supprimé avec succès"
+     *         description="Medical record deleted successfully"
      *     ),
      *     @OA\Response(
      *         response=403,
-     *         description="Action non autorisée"
+     *         description="Unauthorized action"
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Dossier médical non trouvé"
+     *         description="Medical record not found"
      *     )
      * )
      */
@@ -127,19 +127,19 @@ class MedicalRecordDoc
     /**
      * @OA\Get(
      *     path="/api/patients/{patient}/medical-records",
-     *     summary="Lister les dossiers médicaux d'un patient",
-     *     tags={"Dossiers Médicaux"},
+     *     summary="List patient's medical records",
+     *     tags={"Medical Records"},
      *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="patient",
      *         in="path",
      *         required=true,
-     *         description="ID du patient",
+     *         description="Patient ID",
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Liste des dossiers médicaux",
+     *         description="List of medical records",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/MedicalRecord")),
@@ -154,12 +154,12 @@ class MedicalRecordDoc
     /**
      * @OA\Get(
      *     path="/api/medical-records/follow-ups",
-     *     summary="Lister les suivis à venir et en retard",
-     *     tags={"Dossiers Médicaux"},
+     *     summary="List upcoming and overdue follow-ups",
+     *     tags={"Medical Records"},
      *     security={{"bearerAuth": {}}},
      *     @OA\Response(
      *         response=200,
-     *         description="Liste des suivis",
+     *         description="List of follow-ups",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(
