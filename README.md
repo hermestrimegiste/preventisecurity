@@ -1,140 +1,212 @@
-# 🏥 MediCare: Multi-Tenant Medical Clinic Platform
+# 🔒 vCISO Platform: Cybersecurity Assessment for SMEs
 
-MediCare is a professional, multi-tenant web application designed for managing patient appointments across multiple organizations (clinics/hospitals).
+vCISO is a comprehensive cybersecurity self-assessment platform designed for small and medium enterprises (SMEs). It enables businesses to quickly evaluate their security posture and receive AI-generated actionable recommendations.
 
-This project demonstrates expertise in building complex, production-ready applications with strict **data isolation** and **Role-Based Access Control (RBAC)**, using a modern Laravel/Vue stack.
+This project demonstrates expertise in building complex, production-ready applications with **multi-tenant architecture**, **Role-Based Access Control (RBAC)**, and **AI integration**, using a modern Laravel/Vue stack.
+
+---
+
+## 🚀 Project Overview
+
+### Problem Statement
+
+- Low cybersecurity awareness among SMEs
+- Delayed decisions due to lack of clear, quantified business-oriented diagnostics
+- Difficulty qualifying leads for cybersecurity consultants
+
+### Solution
+
+A web platform that enables:
+
+1. **Self-Assessment**: Fill out a questionnaire (5-20 min depending on level)
+2. **AI-Generated Report**: Automatic executive report (PDF + web page) via AI
+3. **Expert Consultation**: Schedule a video call with a consultant to take action
 
 ---
 
+## ✨ Key Features (Planned)
 
-## 🚀 Live Demo & Repository
+### Two Assessment Levels
 
-| Deliverable | URL |
-| :--- | :--- |
-| **Deployed Application** | **[https://medicare.aourisis.org](https://medicare.aourisis.org)** |
-| **API Documentation (Swagger)** | **[https://medicare.aourisis.org/api/documentation](https://medicare.aourisis.org/api/documentation)** |
-| **GitHub Repository** | **[https://github.com/hermestrimegiste/medicare](https://github.com/hermestrimegiste/medicare)** |
+#### Level 1: Express Diagnostic (5 minutes)
 
----
-## ✨ Features Implemented (MediCare)
+- **Target**: CEO, CFO, COO (non-technical profiles)
+- **Questions**: 6 strategic business-oriented questions
+- **Output**: Light executive report (2 pages) + global score + strong CTA
+
+#### Level 2: Detailed Self-Assessment (15-20 minutes)
+
+- **Target**: CIO, CISO, IT Managers (technical profiles)
+- **Questions**: 8 sections with sub-questions and dependencies
+- **Format**: Interactive mindmap with explanatory tooltips
+- **Output**: Comprehensive technical report (6-10 pages) + roadmap + recommended pentest
 
 ### Core Multi-Tenancy
-* **Organization Isolation:** All core data (Patients, Appointments, MedicalRecords) is strictly isolated by `organization_id` using **Laravel Global Scopes** applied to the Eloquent models.
-* **Organization Switching:** Users affiliated with multiple clinics (Doctors) can switch their active context instantly via the UI without logging out.
+
+- **Organization Isolation**: All data strictly isolated by `organization_id` (consultancy firms)
+- **Organization Switching**: Consultants affiliated with multiple firms can switch context instantly
 
 ### Role-Based Access Control (RBAC)
-* **Two User Roles:** Implemented using `spatie/laravel-permission`:
-    * `Admin`: Manages the Organization's settings and members.
-    * `Doctor`: Manages Patients, Appointments, and Medical Records.
-    * `Patient`: Manages their own profile and appointments.
 
-### Business Features
-* **Patient Management:** Full CRUD operations for patients (isolated per organization).
-* **Appointment Scheduling:** Creation, calendar viewing (filtered by doctor/date), and status management (Scheduled, Completed, Cancelled).
+- **Admin**: Manages organization settings and members
+- **Consultant**: Manages leads, assessments, and reports
+- **Respondent**: SME users filling out assessments (public access)
+
+### Business Features (Planned)
+
+- **Assessment Management**: Express and detailed questionnaires with dependencies
+- **AI Report Generation**: Powered by OpenAI GPT-4 for personalized recommendations
+- **Scoring Engine**: Risk assessment with maturity levels per domain
+- **Booking System**: Integration with Cal.com/Calendly for consultant appointments
+- **Consultant Dashboard**: Lead management with filters, notes, and exports
 
 ---
-## 🛠️ Technology Stack Justification
 
-The stack was chosen to demonstrate proficiency in a **robust, production-ready, full-stack environment**, prioritizing **developer velocity, maintainability, and security**—especially critical for 
-a multi-tenant application.
+## 🛠️ Technology Stack
 
 ### Backend & Core Framework
-| Dependency | Rationale |
-| :--- | :--- |
-| **Laravel (PHP)** | Chosen for its **stability, security, and architectural maturity**, making it the ideal choice to enforce strict **multi-tenant data isolation** (via Global Scopes). |
-| **MySQL** | A robust relational database selected for its superior **data integrity** and transactional safety, essential for sensitive medical data. |
-| **Inertia.js** | Used to create a modern **Monolith/Hybrid application**. It drastically accelerates development by using Laravel's routing/validation with Vue's reactivity, avoiding the 
-complexity of a separate API. |
 
-### Backend Libraries for Quality & Security
-| Dependency | Rationale |
-| :--- | :--- |
-| **Laravel Breeze** | Provides essential, minimal **authentication scaffolding**, allowing immediate focus on core business logic rather than boilerplate security setup. |
-| **Spatie/laravel-permission** | A professional standard for **Role-Based Access Control (RBAC)**, used to clearly enforce permissions between Admin and Doctor users. |
-| **DarkaOnline/L5-Swagger** | **(Bonus Feature)** Automatically generates live **OpenAPI/Swagger** documentation from controller annotations, fulfilling the API documentation requirement and 
-enabling contract testing. |
-| **Pest / PHPUnit** | Used for writing **functional tests**, primarily to validate that the multi-tenant logic correctly prevents cross-organization data access. |
+| Dependency           | Purpose                                                                |
+| :------------------- | :--------------------------------------------------------------------- |
+| **Laravel (PHP)**    | Robust framework for multi-tenant data isolation and security          |
+| **PostgreSQL/MySQL** | Relational database for structured assessment data                     |
+| **Inertia.js**       | Monolith architecture combining Laravel backend with Vue.js reactivity |
 
-### Frontend & User Experience (UX)
-| Dependency | Rationale |
-| :--- | :--- |
-| **Vue.js** | A lightweight and progressive framework perfect for building dynamic, reactive components like the Appointment Calendar. |
-| **Tailwind CSS** | Chosen for its **utility-first approach**, enabling rapid, high-quality, and consistent styling to meet the "polished" visual design requirement. |
-| **Headless UI** | Provides highly accessible, unstyled Vue components. Used to build complex, accessible UI elements like the **Organization Switcher** and Modals. |
-| **v-calendar** | A dedicated Vue component for visualizing schedules, crucial for the core **Appointment Scheduling** feature. |
+### Backend Libraries
+
+| Dependency                    | Purpose                          |
+| :---------------------------- | :------------------------------- |
+| **Laravel Breeze**            | Authentication scaffolding       |
+| **Spatie/laravel-permission** | Role-Based Access Control (RBAC) |
+| **OpenAI API**                | AI-powered report generation     |
+| **Laravel PDF**               | PDF report generation            |
+| **Redis**                     | Queue management and caching     |
+
+### Frontend & UX
+
+| Dependency       | Purpose                                         |
+| :--------------- | :---------------------------------------------- |
+| **Vue.js**       | Reactive components for interactive assessments |
+| **Tailwind CSS** | Utility-first styling for modern design         |
+| **Headless UI**  | Accessible, unstyled components                 |
+| **v-calendar**   | Appointment scheduling visualization            |
 
 ---
-## ⚙️ Setup and Installation Instructions
 
-These instructions assume you have PHP (>= 8.2), Composer, and Node.js installed.
+## ⚙️ Setup and Installation
+
+### Prerequisites
+
+- PHP >= 8.2
+- Composer
+- Node.js >= 18
+- PostgreSQL or MySQL
+
+### Installation Steps
 
 1.  **Clone the repository:**
+
     ```bash
-    git clone [https://github.com/hermestrimegiste/medicare.git]
-    or
-    git clone [git@github.com:hermestrimegiste/medicare.git]
-    cd medicare
+    git clone https://github.com/hermestrimegiste/vciso-platform.git
+    cd vciso-platform
     ```
 
-2.  **Install PHP and Composer Dependencies:**
+2.  **Install PHP Dependencies:**
+
     ```bash
     composer install
     ```
 
-3.  **Install Node.js Dependencies (Vue/Tailwind):**
+3.  **Install Node.js Dependencies:**
+
     ```bash
     npm install
-    or
+    # or
     yarn install
-    or 
+    # or
     bun install
     ```
 
 4.  **Configure Environment:**
-    * Copy the example environment file: `cp .env.example .env`
-    * Set your database credentials in `.env` (ensure it points to your PostgreSQL/MySQL server).
-    * Copy the example environment file to  `.env.testing` (ensure it points to your PostgreSQL/MySQL server).
-    * Generate the application key: `php artisan key:generate`
+
+    ```bash
+    cp .env.example .env
+    # Edit .env with your database credentials
+    php artisan key:generate
+    ```
 
 5.  **Run Migrations and Seed Data:**
-    ```bash
-    php artisan migrate --seed
-    php artisan migrate:fresh --seed --env=testing
 
+    ```bash
+    php artisan migrate:fresh --seed
     ```
-    *(The seed script creates demo organizations and test users for immediate validation of multi-tenancy).*
 
-6.  **Compile Assets & Run Server:**
+6.  **Compile Assets & Start Server:**
     ```bash
-    npm run dev  # To watch for frontend changes
+    npm run dev  # Watch for frontend changes
     php artisan serve
     ```
 
 The application will be accessible at `http://127.0.0.1:8000`.
 
 ---
-## 🔑 populate Demo data
+
+## 🔑 Test Credentials
+
+| Role           | Email                 | Password   | Organization(s)  |
+| -------------- | --------------------- | ---------- | ---------------- |
+| **Admin**      | `admin@demo.com`      | `password` | Acham Consulting |
+| **Consultant** | `consultant@demo.com` | `password` | Acham Consulting |
+
+---
+
+## 🧪 Testing
+
 ```bash
-    php artisan tinker
-    $users = User::factory()->count(10)->create();
-    $organizations = Organization::factory()->count(10)->create();
-    $appointments = Appointment::factory()->count(10)->create();
-    #$medicalRecords = MedicalRecord::factory()->count(10)->create();
-    $patients = Patient::factory()->count(50)->create();
-    exit;
+# Run all tests
+php artisan test
+
+# Run specific test suite
+php artisan test --filter=AuthTest
 ```
 
-## test 
-```bash
-    php artisan test
-```
+---
 
-## 👤 Test Credentials
+## 📋 Project Status
 
-| Role | Email | Password | Organization(s) |
-|------|-------|----------|-----------------|
-| **Admin** | `admin@demo.com` | `password` | Clinic Alpha |
-| **Doctor (Multi-Org)** | `doctor@demo.com` | `password` | Clinic Alpha, Clinic Beta |
-| **Doctor (Beta)** | `doctor.beta@demo.com` | `password` | Clinic Beta |
-| **Admin (Metro)** | `admin.metro@demo.com` | `password` | Metropolitan Hospital |
-| **Doctor (Metro)** | `doctor.metro@demo.com` | `password` | Metropolitan Hospital |
+This project is currently in **Phase 1: Cleanup & Foundation**. The medical domain code (MediCare) has been removed, and the foundation for the vCISO platform is being established.
+
+### Completed
+
+- ✅ Multi-tenant architecture (organizations)
+- ✅ Authentication system (Laravel Breeze)
+- ✅ RBAC with Spatie Permission
+- ✅ Clean codebase foundation
+
+### In Progress
+
+- 🚧 Database schema for assessments
+- 🚧 Assessment questionnaires (Express & Detailed)
+- 🚧 AI integration for report generation
+
+### Planned
+
+- ⏳ Scoring engine
+- ⏳ PDF report generation
+- ⏳ Booking system integration
+- ⏳ Consultant dashboard
+
+---
+
+## 📄 License
+
+This project is proprietary software developed for cybersecurity assessment services.
+
+---
+
+## 📞 Contact
+
+For questions or collaboration inquiries, please contact:
+
+- Email: [contact information]
+- Project: vCISO Platform by Acham Consulting

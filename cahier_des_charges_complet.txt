@@ -1,0 +1,1290 @@
+================================================================================
+CAHIER DES CHARGES COMPLET
+PLATEFORME D'AUTO-DIAGNOSTIC CYBERSÉCURITÉ POUR PME
+================================================================================
+
+Version : 1.0
+Date : 04 février 2026
+Commanditaires : Acham (consultant cybersécurité), David Dolama
+Technologie : Laravel (PHP) + Vue.js + PostgreSQL/MySQL
+
+
+================================================================================
+1. CONTEXTE & OBJECTIFS BUSINESS
+================================================================================
+
+PROBLÈME IDENTIFIÉ
+------------------
+- Faible sensibilisation des PME aux risques cyber & au rôle du pentest
+- Décisions retardées faute d'un diagnostic clair, chiffré et orienté "business"
+- Difficulté à qualifier les leads pour les consultants cybersécurité
+
+SOLUTION PROPOSÉE
+-----------------
+Plateforme web permettant de :
+1. Remplir un questionnaire d'auto-diagnostic (5-20 min selon le niveau)
+2. Générer automatiquement un rapport exécutif (PDF + page web) via IA
+3. Proposer un créneau de visio avec un consultant pour passer à l'action
+
+CIBLES UTILISATEURS
+-------------------
+- Dirigeants/Executives de PME : CEO, COO, DAF, DSI
+- Zones géographiques : France, UE, Canada, Togo
+- Secteurs : Finance, Santé, Services, Industrie
+
+KPIs CIBLES (MVP)
+-----------------
+- ≥ 40% taux de complétion du questionnaire
+- ≥ 30% conversion rapport → prise de rendez-vous
+- < 5 minutes : délai "première valeur" (formulaire → rapport)
+- < 60 secondes : génération du rapport (p95)
+
+
+================================================================================
+2. ARCHITECTURE À 2 NIVEAUX (INNOVATION vs CAHIER INITIAL)
+================================================================================
+
+NIVEAU 1 : DIAGNOSTIC EXPRESS (5 minutes)
+------------------------------------------
+Cible : CEO, DAF, COO (profils non-techniques)
+Questions : 6 questions stratégiques orientées business
+Format : QCM + champs texte optionnels
+Sortie : Rapport exécutif light (2 pages) + score global + CTA fort
+
+Questions Express :
+1. Quel est l'objectif métier principal de la solution ?
+   → Aide : Comprendre ce qu'il faut absolument protéger
+   → Exemples : Finance, Santé, Services, Industrie
+
+2. Quels types de données sont supportées par cette solution ?
+   → Aide : Détermine le niveau de protection requis
+   → Options : Aucune sensible / Personnelles / Financières / Santé / IP
+
+3. Hébergement : sur vos infrastructures, cloud ou hybride ?
+   → Aide : Identifier les responsabilités et menaces spécifiques
+   → Options : On-prem / Cloud public / Cloud privé / Hybride
+
+4. Quels partenaires/fournisseurs tiers ont accès aux données ?
+   → Aide : Intégrer les risques liés aux tiers
+   → Exemples : PSP paiement, API messagerie, SSO, e-signature
+
+5. Obligations réglementaires ou contractuelles ?
+   → Aide : Cibler les scénarios liés à la conformité
+   → Options : RGPD / PCI-DSS / HIPAA / HDS / ISO 27001
+
+6. Impacts les plus critiques en cas d'incident ?
+   → Aide : Prioriser les scénarios selon la gravité
+   → Options : Perte financière / Réputation / Pénalités / Interruption / Perte IP
+
+
+NIVEAU 2 : AUTO-DIAGNOSTIC DÉTAILLÉ (15-20 minutes)
+----------------------------------------------------
+Cible : DSI, RSSI, Responsables IT (profils techniques)
+Questions : 8 sections avec sous-questions et dépendances
+Format : Mindmap interactive avec tooltips explicatifs
+Sortie : Rapport technique complet (6-10 pages) + roadmap + pentest recommandé
+
+Structure Mindmap (8 sections) :
+
+1. SECTEUR D'ACTIVITÉ & TYPE DE SOLUTION
+   - Finance / Service / Santé / Industrie
+   - Web app / Mobile / Infrastructure interne / Cloud SaaS
+   → Dépendances : détermine les sections sensibles
+
+2. INTÉGRATIONS D'API TIERS
+   - Paiement (PSP)
+   - Messagerie (email/SMS)
+   - Authentification (Google, Facebook, SSO)
+   - Autres (visio, e-signature, KYC...)
+   → Dépendance : API paiement → Données financières → PCI-DSS
+
+3. NOMBRE D'UTILISATEURS
+   - < 100
+   - 100 - 1 000
+   - 1 000 - 10 000
+   - > 10 000
+   → Dépendance : > 10 000 → Hébergement cloud + scalabilité
+
+4. COMPTES ADMINISTRATEURS
+   - Oui / Non
+   - Si Oui → Type d'authentification :
+     * 2FA / MFA obligatoire
+     * SSO (SAML/OIDC)
+     * Hardware (FIDO2)
+     * PAM (Privileged Access Management)
+   → Dépendance : Admin → MFA fortement recommandé
+
+5. TYPE DE DONNÉES SUPPORTÉES
+   - 🟢 Aucune donnée sensible
+   - 👤 Données personnelles (RGPD)
+   - 💰 Données financières
+   - 🏥 Données de santé
+   - 🔒 Propriété intellectuelle
+   → Dépendances multiples : type → chiffrement + hébergement + conformité
+
+6. STOCKAGE DES DONNÉES
+   - 🔓 En clair, sans protection
+   - 🔐 Contrôles d'accès simples
+   - 🔒 Chiffrement partiel
+   - 🛡️ Chiffrement systématique (AES-256)
+   - ☁️ Hébergement cloud certifié (ISO 27001, HDS, SOC2)
+
+7. HÉBERGEMENT DE LA SOLUTION
+   - 🏢 Infrastructure interne (on-prem)
+   - ☁️ Cloud public (AWS, Azure, GCP)
+   - 🔀 Cloud privé / hybride
+   - 🤝 Prestataire tiers
+   → Dépendance : Cloud certifié facilite conformité
+
+8. OBLIGATIONS RÉGLEMENTAIRES
+   - 🟢 Aucune contrainte
+   - 🇪🇺 RGPD (données personnelles UE)
+   - 💳 PCI-DSS (paiements par carte)
+   - 🏥 HIPAA (santé US) / HDS (santé FR)
+   - 🏭 ISO 27001 / IEC 62443 (OT industriel)
+
+
+GESTION DES DÉPENDANCES (LOGIQUE MINDMAP)
+------------------------------------------
+Interdépendances automatiques :
+- Secteur Finance/Santé → Suggère données sensibles
+- API Paiement → Suggère PCI-DSS + chiffrement
+- Données personnelles → Suggère RGPD
+- > 10 000 utilisateurs → Suggère cloud public
+- Admin Oui → Dévoile section MFA/SSO
+
+Détection d'incohérences (Scénario E) :
+- Secteur Santé + "Aucune donnée sensible" → ALERTE incohérence
+- Correction suggérée : Données personnelles + Données de santé
+
+
+================================================================================
+3. SCÉNARIOS D'USAGE RÉELS
+================================================================================
+
+SCÉNARIO A : DG Télémédecine (France)
+--------------------------------------
+Secteur : Santé - Télémédecine (France + UE)
+Solution : Web + Mobile, Cloud PaaS
+Intégrations : Paiement (PSP tokenization), Email/SMS, Visio médicale
+Utilisateurs : 1 000 - 10 000 (12 mois)
+Admin : Oui (MFA obligatoire + SSO staff)
+Données : Personnelles + Santé + IP (aucun PAN stocké)
+Stockage : Chiffrement systématique (KMS/HSM), RBAC, logs immuables
+Hébergement : Cloud public UE, VPC privé, WAF/IDS
+Conformité : RGPD + HDS + PCI-DSS via PSP (SAQ-A)
+
+→ Rapport attendu : Pentest grey-box web/mobile + audit HDS + phishing
+
+
+SCÉNARIO B : CEO Micro-crédit Digital
+--------------------------------------
+Secteur : Finance B2C/B2B2C
+Solution : Web (back-office) + Mobile client, Cloud PaaS/IaaS
+Intégrations : Paiement, KYC/AML, Email/SMS
+Utilisateurs : 10 000 - 50 000 (18 mois)
+Admin : Oui (MFA + SSO, rôles séparés)
+Données : Personnelles + Financières (scores, IBAN tokenisé) + IP
+Stockage : Chiffrement systématique, data masking, vault, logs signés
+Hébergement : Cloud public UE, WAF, rate limiting, SIEM
+Conformité : RGPD + PCI-DSS (SAQ-A) + LBC/FT (KYC)
+
+→ Rapport attendu : Pentest applicatif + OWASP Top 10 + audit scoring
+
+
+SCÉNARIO C : COO SaaS B2B LegalTech
+------------------------------------
+Secteur : Services B2B - Contract management
+Solution : Web app + intégrations bureautiques, Cloud SaaS
+Intégrations : SSO SAML/OIDC, Email transactionnel, e-signature
+Utilisateurs : 1 000 - 10 000 (multi-tenants)
+Admin : Oui (MFA par défaut, SSO enterprise, RBAC strict)
+Données : Personnelles + IP (contrats, clauses)
+Stockage : Chiffrement systématique, isolation tenant, DLP, sauvegardes
+Hébergement : Cloud public UE, WAF, CSP, monitoring CIS
+Conformité : RGPD (DPA, minimisation) + eIDAS (e-signature)
+
+→ Rapport attendu : Pentest isolation multi-tenant + revue DPA
+
+
+SCÉNARIO D : CTO Industrie (On-prem + OT)
+------------------------------------------
+Secteur : Industrie - Production IT/OT
+Solution : Web interne + Infrastructure on-prem critique
+Intégrations : SMTP relai interne, SSO AD/IdP (aucun paiement)
+Utilisateurs : 100 - 1 000 (multi-usines)
+Admin : Oui (MFA hardware FIDO2, bastion, PAM)
+Données : Personnelles RH + IP (plans) + méta-données prod
+Stockage : Chiffrement systématique, segmentation IT/OT, PRA 3-2-1
+Hébergement : On-prem (OT) + Cloud privé/hybride (IT), IDS/IPS, SIEM
+Conformité : RGPD + ISO 27001 / IEC 62443 (objectif certification)
+
+→ Rapport attendu : Pentest infra + audit segmentation IT/OT + PRA
+
+
+SCÉNARIO E : Détection d'incohérences
+--------------------------------------
+Secteur : Santé - Dossiers patients
+Solution : Web + Mobile, Cloud public
+Réponse initiale erronée : "Aucune donnée sensible"
+→ ALERTE SYSTÈME : Incohérence détectée !
+→ Correction suggérée : Données personnelles + Données de santé
+→ Obligations : RGPD + HDS + PCI-DSS (PSP)
+
+
+================================================================================
+4. FONCTIONNALITÉS DÉTAILLÉES
+================================================================================
+
+4.1 FORMULAIRE D'AUTO-DIAGNOSTIC
+---------------------------------
+Structure :
+- 10 sections (cahier initial) OU 8 sections (mindmap) selon niveau
+- Progression : barre visuelle + estimation temps restant
+- Sauvegarde auto : toutes les 30 secondes
+- Reprise : lien magique (email OTP) si abandon
+- Consentement RGPD : explicite avant soumission
+
+Sections détaillées (Niveau 2 complet - 10 sections) :
+1. Profil & contexte : secteur, taille, pays, cloud, régulations
+2. Gouvernance & politiques : responsable cyber, chartes, audits
+3. Identités & accès : MFA, SSO, droits, comptes privilégiés
+4. Postes & mobiles : MDM/EDR, patching, chiffrement, BYOD
+5. Sauvegardes & PRA : 3-2-1, tests restauration, RPO/RTO
+6. Messagerie & phishing : SPF/DKIM/DMARC, sensibilisation
+7. Applications & web : CI/CD, revues code, WAF, tests
+8. Réseau & périmètre : segmentation, VPN, pare-feu, exposition
+9. Fournisseurs & SaaS : due diligence, DPA, shadow IT
+10. Incidents & conformité : plan réponse, logs, DPIA
+
+Exemples de questions granulaires :
+- MFA activée pour tous les comptes critiques ? (Oui/Non/Partiel + preuve)
+- Sauvegardes chiffrées, déconnectées (immutables) avec test trimestriel ?
+- DMARC en mode "reject" sur le domaine principal ?
+- EDR déployé sur ≥ 90% des postes serveurs/clients ?
+- Tests d'intrusion : fréquence et périmètre (web/app/infras/phishing) ?
+
+Validation :
+- Client-side : React Hook Form + Zod
+- Server-side : Laravel Form Requests
+- Accessibilité : WCAG 2.1 AA (clavier, lecteurs d'écran)
+
+
+4.2 MOTEUR DE SCORING & RECOMMANDATIONS
+----------------------------------------
+Calcul du score :
+- Maturité par domaine : 0-5 (Initial, Géré, Défini, Quantitatif, Optimisé)
+- Score global : 0-100
+- Pondérations sectorielles : Santé/Finance plus strictes
+
+Formule (exemple) :
+score_domaine = Σ(Q_i × poids_i_domaine)
+score_global = Σ(domaines × poids_domaine)
+
+Poids domaines (exemple) :
+- Gouvernance : 15%
+- Identités & accès : 20%
+- Endpoints : 15%
+- Sauvegardes & PRA : 15%
+- Messagerie & phishing : 10%
+- Applications : 10%
+- Réseau : 10%
+- Tiers & SaaS : 5%
+
+Seuils de maturité :
+- 0-39 : Faible (rouge)
+- 40-69 : Moyen (orange)
+- 70-84 : Bon (jaune)
+- ≥85 : Avancé (vert)
+
+Carte des risques :
+- Probabilité × Impact → Catégories : Très élevé / Élevé / Modéré / Faible
+- Heatmap visuelle dans le rapport
+
+Recommandations priorisées :
+- Horizon : 0-30j (Quick wins) / 30-90j / 3-6 mois
+- Effort : S / M / L
+- Impact : S / M / L
+- Coût : € / €€ / €€€ (fourchettes indicatives)
+
+Recommandation pentest (générée par règles) :
+- Type : Web/Mobile/Infra/Cloud/Ingénierie sociale
+- Mode : Black-box / Grey-box / White-box
+- Durée estimée : 3-10 jours/homme
+- Objectifs : OWASP Top 10, Authn/Authz, Exposition périmètre
+- Pré-requis : Environnement de test, comptes dédiés
+
+
+4.3 IA DE GÉNÉRATION DE RAPPORT
+--------------------------------
+Architecture :
+- API : OpenAI GPT-4 (ou équivalent) appelé côté serveur
+- Température : Basse (0.2-0.3) pour cohérence
+- Prompts : Versionnés dans DB, logs de justifications
+
+Entrées IA :
+- Réponses normalisées (JSON)
+- Score global + scores par domaine
+- Métadonnées : secteur, taille, pays, régulations
+- Scénario similaire (si match)
+
+Sortie IA (JSON structuré) :
+{
+  "org_profile": {
+    "sector": "santé",
+    "size": 150,
+    "region": "FR"
+  },
+  "scores": [
+    {"domain": "Identités", "score": 62, "maturity": 2}
+  ],
+  "top_risks": [
+    {
+      "title": "Absence MFA email",
+      "severity": "high",
+      "rationale": "réponses Q3,Q4",
+      "recommended_actions": [
+        {
+          "action": "Activer MFA pour tous",
+          "impact": "high",
+          "effort": "medium",
+          "horizon": "0-30j",
+          "cost_range": "€€"
+        }
+      ]
+    }
+  ],
+  "pentest_reco": {
+    "type": ["web","infra"],
+    "mode": "grey-box",
+    "est_duration_days": 5,
+    "objectives": ["authn/authz","OWASP Top 10","exposition périmètre"],
+    "prereqs": ["environnement de test", "comptes dédiés"]
+  },
+  "executive_summary": "3-5 points clés orientés DG",
+  "roadmap": [
+    {"horizon": "0-30j", "items": ["MFA", "DMARC reject", "sauvegardes test"]}
+  ]
+}
+
+Garde-fous IA :
+- Ne doit PAS affirmer des vulnérabilités non observées
+- Extrapole seulement des risques plausibles
+- Ton : pédagogique, non alarmiste, orienté business
+- Validation schéma JSON stricte
+
+Performance :
+- Génération < 60s dans 95% des cas
+- Retry automatique en cas d'échec
+- Fallback : rapport template si IA indisponible
+
+
+4.4 GÉNÉRATION PDF & PARTAGE
+-----------------------------
+Package Laravel : barryvdh/laravel-dompdf ou spatie/laravel-pdf
+
+Gabarit PDF (2 versions) :
+
+Version Express (2 pages) :
+1. Résumé exécutif (score global + catégorie risque)
+2. Top 3 quick wins avec coût/effort
+3. CTA : "Réserver un échange avec un expert"
+
+Version Détaillée (6-10 pages) :
+1. Résumé exécutif (1 page)
+2. Score global & par domaine + benchmark secteur
+3. Carte des risques (heatmap)
+4. Quick wins 0-30j (checklist)
+5. Roadmap 30-90j / 3-6 mois (tableau)
+6. Recommandation pentest (type, objectifs, livrables)
+7. Annexes techniques (références OWASP, CIS, NIST, glossaire)
+
+Spécifications PDF :
+- Format : A4
+- Taille : < 5 Mo
+- Couverture : Logo + infos organisation
+- Pied de page : Numérotation + date génération
+- Watermark : "Auto-diagnostic — non contractuel"
+- QR code : Lien vers version web sécurisée
+
+Partage sécurisé :
+- URL tokenisée : /reports/{share_token}
+- Expiration : 30 jours par défaut (configurable)
+- Tracking : Ouverture, téléchargement (analytics)
+
+
+4.5 RÉSERVATION DE RENDEZ-VOUS
+-------------------------------
+Intégrations :
+- Cal.com (prioritaire, open-source)
+- Calendly (fallback)
+- Google Calendar / Outlook (via API)
+
+Fonctionnalités :
+- Créneaux dynamiques : fuseau auto-détecté
+- Buffer : 15 min entre RDV
+- Durée : 30 ou 45 min (selon offre)
+- Lien visio : Google Meet / Zoom auto-généré
+- Calendrier ICS : envoyé par email
+
+Notifications :
+- Email confirmation immédiate
+- Rappels : J-1 / H-1 (email + SMS optionnel)
+- Page reprogrammation : lien dans email
+- Webhook : Mise à jour statut lead dans back-office
+
+
+4.6 BACK-OFFICE CONSULTANT
+---------------------------
+Tableau de bord :
+- Liste leads avec filtres :
+  * Statut : Nouveau / À rappeler / Call planifié / Converti / Archivé
+  * Score : < 40 / 40-69 / 70-84 / ≥ 85
+  * Secteur : Finance, Santé, Services, Industrie
+  * Date : Dernières 24h / 7j / 30j
+
+Fiche lead détaillée :
+- Profil organisation (secteur, taille, pays)
+- Réponses questionnaire (visualisation)
+- Scores & recommandations générées
+- Rapport PDF téléchargeable
+- Notes internes (consultant)
+- Historique interactions (emails, appels)
+- Statut pipeline + prochaine action
+
+CMS Admin :
+- CRUD questions/sections
+- Gestion poids scoring
+- Édition prompts IA (versionnés)
+- Modèles emails (transactionnels)
+- Configuration global (délai expiration, seuils)
+
+Exports :
+- CSV leads (filtré)
+- Rapport analytics (conversion, taux complétion)
+
+Sécurité back-office :
+- RBAC : Consultant (lecture + notes) vs Admin (full access)
+- MFA obligatoire
+- Journal d'audit : qui a consulté/modifié quoi + timestamp
+- Session timeout : 30 min
+
+
+================================================================================
+5. MODÈLE DE DONNÉES (LARAVEL)
+================================================================================
+
+TABLES PRINCIPALES
+------------------
+
+organizations
+- id (PK)
+- name (string)
+- sector (enum: finance, sante, services, industrie)
+- size (int: nombre d'employés)
+- country (string: code ISO)
+- created_at, updated_at
+
+respondents (utilisateurs qui remplissent le diag)
+- id (PK)
+- organization_id (FK)
+- email (string, unique)
+- role (string: CEO, DAF, DSI, etc.)
+- locale (enum: fr, en)
+- magic_link_token (string, nullable)
+- magic_link_expires_at (timestamp)
+- consent_gdpr_at (timestamp, nullable)
+- created_at, updated_at
+
+assessments (auto-diagnostics)
+- id (PK)
+- organization_id (FK)
+- respondent_id (FK)
+- assessment_level (enum: express, detailed) -- NOUVEAU
+- parent_assessment_id (FK nullable) -- Lien Express → Détaillé
+- status (enum: draft, in_progress, submitted, completed)
+- started_at (timestamp)
+- submitted_at (timestamp, nullable)
+- completed_at (timestamp, nullable)
+- version (int: version du questionnaire)
+- created_at, updated_at
+
+cms_questions (questions configurables)
+- id (PK)
+- section_id (FK: cms_sections)
+- question_text (text)
+- help_text (text, nullable)
+- help_link (string URL, nullable)
+- assessment_level (enum: express, detailed, both)
+- answer_type (enum: single_choice, multiple_choice, text, boolean)
+- options (json: pour QCM)
+- dependencies (json: conditions d'affichage)
+- weight (decimal: pour scoring)
+- order (int: ordre d'affichage)
+- is_active (boolean)
+- created_at, updated_at
+
+cms_sections
+- id (PK)
+- name (string)
+- slug (string)
+- description (text)
+- icon (string: emoji ou class icon)
+- order (int)
+- assessment_level (enum: express, detailed, both)
+- created_at, updated_at
+
+answers (réponses individuelles)
+- id (PK)
+- assessment_id (FK)
+- question_id (FK: cms_questions)
+- value (text: pour QCM/boolean)
+- custom_value (json: pour réponses textuelles personnalisées)
+- is_custom (boolean: si réponse hors options)
+- evidence_url (string: pièce jointe optionnelle)
+- created_at, updated_at
+
+scores (résultats scoring)
+- id (PK)
+- assessment_id (FK)
+- domain (string: nom du domaine)
+- score_0_100 (int)
+- maturity_0_5 (int)
+- weights_version (string: version des règles appliquées)
+- created_at, updated_at
+
+recommendations (actions recommandées)
+- id (PK)
+- assessment_id (FK)
+- title (string)
+- description (text)
+- impact (enum: low, medium, high)
+- effort (enum: small, medium, large)
+- horizon (enum: 0-30j, 30-90j, 3-6mois)
+- cost_range (string: €, €€, €€€)
+- order (int: priorité)
+- created_at, updated_at
+
+reports (rapports générés)
+- id (PK)
+- assessment_id (FK)
+- json_blob (json: sortie structurée de l'IA)
+- pdf_url (string: S3/stockage)
+- web_url (string: version HTML)
+- share_token (string, unique: pour partage sécurisé)
+- expires_at (timestamp: expiration lien)
+- generated_at (timestamp)
+- ai_prompt_version (string)
+- created_at, updated_at
+
+bookings (rendez-vous)
+- id (PK)
+- assessment_id (FK)
+- consultant_id (FK)
+- provider (enum: cal_com, calendly, google)
+- provider_booking_id (string: ID externe)
+- slot_start (timestamp)
+- slot_end (timestamp)
+- timezone (string)
+- meeting_link (string: lien visio)
+- status (enum: scheduled, completed, cancelled, no_show)
+- reminder_sent_at (timestamp)
+- created_at, updated_at
+
+consultants (équipe Acham)
+- id (PK)
+- user_id (FK: users Laravel)
+- name (string)
+- email (string)
+- calendars (json: URLs Cal.com/Calendly)
+- skills (json: secteurs d'expertise)
+- is_active (boolean)
+- created_at, updated_at
+
+audit_log (traçabilité RGPD)
+- id (PK)
+- actor_id (FK: users)
+- action (enum: view, create, update, delete, export)
+- entity (string: nom du model)
+- entity_id (int)
+- changes (json: ancien/nouveau état)
+- ip_address (string)
+- user_agent (string)
+- timestamp (timestamp)
+
+cms_items (contenus éditoriaux)
+- id (PK)
+- type (enum: page, email_template, snippet)
+- locale (enum: fr, en)
+- slug (string)
+- title (string)
+- content (text)
+- metadata (json)
+- is_published (boolean)
+- created_at, updated_at
+
+
+RELATIONS ELOQUENT
+------------------
+Organization hasMany Assessments
+Respondent belongsTo Organization
+Assessment belongsTo Organization, Respondent
+Assessment hasMany Answers, Scores, Recommendations
+Assessment hasOne Report, Booking
+Question belongsTo Section
+Answer belongsTo Assessment, Question
+Report belongsTo Assessment
+Booking belongsTo Assessment, Consultant
+
+
+GLOBAL SCOPES (MULTI-TENANT)
+-----------------------------
+Models concernés : Organization, Assessment, Answer, Score, Report
+→ Filtrage automatique par organization_id dans toutes les requêtes
+
+
+================================================================================
+6. ARCHITECTURE TECHNIQUE
+================================================================================
+
+STACK TECHNOLOGIQUE
+--------------------
+Backend :
+- Framework : Laravel 11+ (PHP 8.2+)
+- API : RESTful, versionnée (/api/v1/...)
+- Auth : Laravel Breeze + Spatie Laravel Permission (RBAC)
+- Database : PostgreSQL 15+ ou MySQL 8+
+- Queue : Redis (jobs génération PDF/IA)
+- Cache : Redis
+- Storage : S3-compatible (Scaleway/OVH Object Storage)
+
+Frontend :
+- Framework : Inertia.js + Vue.js 3
+- Styling : Tailwind CSS 3
+- Forms : React Hook Form + Zod (ou VeeValidate)
+- Components : Headless UI
+- Charts : Chart.js ou Recharts
+- Calendar : v-calendar
+
+IA & Génération :
+- Provider : OpenAI API (GPT-4 Turbo)
+- PDF : barryvdh/laravel-dompdf ou spatie/laravel-pdf
+- Antivirus : ClamAV (si upload fichiers)
+
+Infrastructure :
+- Hébergement : OVH / Scaleway (région UE)
+- CI/CD : GitHub Actions
+- Monitoring : Laravel Telescope + Sentry
+- Analytics : Plausible (RGPD-friendly)
+- Emails : Mailjet / SendGrid
+- SMS : Twilio (optionnel, pour rappels)
+
+Sécurité :
+- WAF : Cloudflare ou OVH Anti-DDoS
+- Secrets : Doppler / AWS Secrets Manager / Laravel Vault
+- SAST : CodeQL / Snyk
+- DAST : OWASP ZAP
+
+
+ENDPOINTS API (EXEMPLES)
+-------------------------
+POST   /api/v1/assessments
+  → Créer un assessment (email, org, locale, level)
+  → Retour : assessment_id + magic_link
+
+PUT    /api/v1/assessments/{id}/answers
+  → Enregistrer/valider un lot de réponses
+  → Validation server-side
+
+POST   /api/v1/assessments/{id}/score
+  → Calculer les scores (moteur règles)
+  → Retour : scores par domaine + global
+
+POST   /api/v1/assessments/{id}/report
+  → Génère rapport via IA (job asynchrone)
+  → Retour : report_id + estimated_time
+
+GET    /api/v1/reports/{id}
+  → Récupère JSON + PDF URL
+
+POST   /api/v1/reports/{id}/share
+  → Crée lien partage tokenisé
+  → Retour : share_url + expires_at
+
+POST   /api/v1/bookings
+  → Créer réservation (assessment_id, slot, timezone)
+  → Webhook vers Cal.com/Calendly
+
+GET    /api/v1/admin/leads (auth)
+  → Liste leads avec filtres (statut, score, secteur)
+
+GET    /api/v1/admin/leads/{id} (auth)
+  → Fiche lead détaillée
+
+PATCH  /api/v1/admin/leads/{id}/notes (auth)
+  → Ajouter notes internes
+
+Webhooks :
+POST   /webhooks/cal (création/annulation RDV)
+POST   /webhooks/mail (ouverture/clic emails)
+POST   /webhooks/pdf (succès/erreur génération)
+
+
+SÉCURITÉ BY DESIGN
+------------------
+Menaces STRIDE & contre-mesures :
+
+Spoofing :
+- SSO/MFA pour back-office
+- DKIM/DMARC sur emails sortants
+- Validation stricte tokens (magic link, share)
+
+Tampering :
+- JWT RS256 (si API tokens)
+- Intégrité PDF (checksum)
+- Stockage rapports : WORM (Write Once Read Many)
+
+Repudiation :
+- Audit logs immuables (append-only)
+- Horodatage certifié
+
+Information Disclosure :
+- Chiffrement au repos : AES-256 (DB encryption at rest)
+- Chiffrement en transit : TLS 1.3, HSTS
+- Masquage PII dans logs
+- VPC privés
+
+Denial of Service :
+- Rate limiting : 100 req/h par IP
+- WAF : protection DDoS
+- Queue jobs : limiter concurrence IA
+
+Elevation of Privilege :
+- RBAC strict (Consultant / Admin)
+- Principe du moindre privilège
+- Revues d'accès trimestrielles
+
+Conformité :
+- CSP stricte (Content Security Policy)
+- Cookies : HttpOnly, Secure, SameSite=Strict
+- CAPTCHA : Google reCAPTCHA v3 (formulaires)
+- OWASP ASVS L2 minimum
+
+
+RGPD & CONFIDENTIALITÉ
+----------------------
+Base légale :
+- Intérêt légitime (B2B leads) + Consentement explicite
+
+DPIA :
+- Réalisée et validée avant GO-LIVE
+- Mise à jour annuelle
+
+DPA (Data Processing Agreements) :
+- Hébergeur (OVH/Scaleway)
+- Email (Mailjet/SendGrid)
+- Calendrier (Cal.com/Google)
+- IA (OpenAI)
+
+Minimisation :
+- Collecter uniquement données nécessaires
+- Pas de tracking publicitaire
+
+Durée de conservation :
+- Par défaut : 180 jours après dernier contact
+- Purge automatique (scheduled job)
+- Export/suppression sur demande (droits RGPD)
+
+Droits des personnes :
+- Accès : export JSON/PDF des données
+- Rectification : formulaire dédié
+- Suppression : soft delete + purge définitive après 30j
+- Portabilité : export machine-readable
+
+Logs d'accès :
+- Qui a consulté quelle fiche lead + timestamp
+- Conservés 1 an (obligation légale)
+
+
+================================================================================
+7. INTERNATIONALISATION (i18n)
+================================================================================
+
+LANGUES SUPPORTÉES (MVP)
+------------------------
+- Français (fr) : langue par défaut
+- Anglais (en)
+
+ÉLÉMENTS TRADUITS
+-----------------
+- Interface UI (labels, boutons, messages)
+- Questions & sections du questionnaire
+- Emails transactionnels
+- Rapports PDF/HTML
+- Aide contextuelle (tooltips)
+
+STRUCTURE FICHIERS
+------------------
+Laravel lang/fr.json
+Laravel lang/en.json
+
+Détection locale :
+1. Paramètre URL (?locale=en)
+2. Préférence utilisateur (si compte)
+3. Header Accept-Language navigateur
+4. Défaut : fr
+
+
+================================================================================
+8. CONTENUS & COMMUNICATION
+================================================================================
+
+PAGES LANDING (PUBLIC)
+-----------------------
+1. Accueil :
+   - Hero : "En 10 minutes, obtenez un rapport clair sur vos risques cyber"
+   - Bénéfices : Gain de temps, Vision claire, Plan d'action priorisé
+   - Preuves sociales : Logos partenaires, témoignages anonymisés
+   - CTA : "Démarrer l'auto-diagnostic"
+
+2. Pourquoi le pentest :
+   - Définition vulgarisée
+   - Différence audit/pentest
+   - ROI d'un pentest
+   - Cas d'usage sectoriels
+
+3. Comment ça marche :
+   - 3 étapes : Questionnaire → Rapport → Rendez-vous
+   - Timeline visuelle
+   - Capture d'écran rapport
+
+4. L'auto-diag :
+   - Durée : 5-20 min selon niveau
+   - 100% gratuit
+   - Aucun engagement
+   - Données sécurisées (RGPD)
+
+5. À propos :
+   - Présentation Acham
+   - Expertise & certifications
+   - Contact
+
+6. Blog/Ressources (optionnel V2) :
+   - Articles pédagogiques
+   - Guides téléchargeables
+   - Webinaires
+
+
+TON ÉDITORIAL
+-------------
+- Pédagogique : expliquer sans jargon
+- Orienté valeur : focus bénéfices business, pas technique
+- Non alarmiste : éviter la peur, privilégier les priorités actionnables
+- Transparent : "Auto-diagnostic — non contractuel"
+
+
+EMAILS TRANSACTIONNELS
+-----------------------
+1. Confirmation démarrage assessment :
+   - Lien magique de reprise
+   - Estimation temps restant
+   - Expiration : 7 jours
+
+2. Rapport prêt :
+   - Lien téléchargement PDF
+   - Lien partage web sécurisé
+   - CTA : "Réserver un échange"
+
+3. Confirmation RDV :
+   - Détails (date, heure, fuseau)
+   - Lien visio
+   - ICS joint
+   - Préparer : liste questions à aborder
+
+4. Rappel RDV J-1 :
+   - Confirmation présence
+   - Lien reprogrammation
+
+5. Rappel RDV H-1 :
+   - Lien visio (répété)
+   - "On vous attend dans 1h"
+
+
+================================================================================
+9. PLAN PROJET (14 SEMAINES)
+================================================================================
+
+SEMAINE 1 : Cadrage & Architecture
+-----------------------------------
+Livrables :
+- Audit complet codebase MediCare
+- Architecture Decision Record (ADR) : 2 niveaux vs 1 niveau
+- Maquettes Figma (wireframes low-fi)
+- Schéma questionnaires finalisé (Express 6Q + Détaillé 8 sections)
+
+SEMAINES 2-3 : Fondations Backend
+----------------------------------
+Livrables :
+- Migrations DB complètes (15 tables)
+- Models Eloquent + Relations
+- Global Scopes multi-tenant
+- Seeders :
+  * 6 questions Express
+  * 8 sections + sous-questions Détaillées
+  * 2 consultants demo
+  * 5 scénarios tests (A-E)
+- Tests unitaires models
+
+SEMAINE 4 : Questionnaire Express
+----------------------------------
+Livrables :
+- API endpoints (POST /assessments, PUT /answers)
+- Validation Form Requests
+- Frontend Vue : formulaire 6 questions
+- Composant QuestionCard avec tooltips
+- Sauvegarde auto + magic link
+- Tests E2E (Cypress/Pest)
+
+SEMAINES 5-6 : Questionnaire Détaillé & Mindmap
+------------------------------------------------
+Livrables :
+- 8 sections + dépendances (JSON rules)
+- Composant MindmapStepper.vue (réutilisation HTML existant)
+- Logique interdépendances :
+  * Finance → Données sensibles
+  * Paiement → PCI-DSS
+  * Admin → MFA suggéré
+- Détection incohérences (Scénario E)
+- Barre progression dynamique
+
+SEMAINE 7 : Moteur de Scoring
+------------------------------
+Livrables :
+- Service ScoringEngine.php
+- Calcul scores Express vs Détaillé
+- Pondérations sectorielles (finance, santé, services, industrie)
+- Carte des risques (probabilité × impact)
+- Recommandations priorisées (horizon, effort, coût)
+- Tests unitaires (100% coverage scoring)
+
+SEMAINES 8-9 : IA & Génération Rapports
+----------------------------------------
+Livrables :
+- Service ReportGenerator.php
+- 2 prompts versionnés :
+  * Prompt Express (rapport 2 pages)
+  * Prompt Détaillé (rapport 6-10 pages)
+- Intégration OpenAI API (temperature 0.3)
+- Validation schéma JSON sortie
+- Job asynchrone (queue Redis)
+- Gestion erreurs + retry logic
+- Tests : mocks API IA
+
+SEMAINE 10 : PDF & Partage
+---------------------------
+Livrables :
+- 2 templates Blade PDF :
+  * Template Express (2 pages)
+  * Template Détaillé (6-10 pages)
+- Génération PDF (spatie/laravel-pdf)
+- Watermark "Auto-diagnostic — non contractuel"
+- QR code lien web
+- Stockage S3 (OVH Object Storage)
+- Lien partage tokenisé + expiration
+- Page web rapport (HTML responsive)
+
+SEMAINE 11 : RDV & Back-office
+-------------------------------
+Livrables :
+- Intégration Cal.com (webhooks)
+- Composant BookingWidget.vue
+- Emails confirmation + rappels (J-1, H-1)
+- Back-office admin :
+  * Dashboard leads (filtres)
+  * Fiche lead détaillée
+  * Notes internes
+  * Export CSV
+- Journal d'audit (RGPD)
+
+SEMAINE 12 : i18n & Sécurité
+-----------------------------
+Livrables :
+- Fichiers lang/fr.json + lang/en.json
+- Détection locale automatique
+- Traduction questionnaires + rapports
+- Hardening sécurité :
+  * CSP stricte (middleware)
+  * Rate limiting (100 req/h)
+  * CAPTCHA reCAPTCHA v3
+  * Secrets Doppler/Vault
+- Scan dépendances (Composer audit)
+- SAST (CodeQL)
+
+SEMAINE 13 : RGPD & Conformité
+-------------------------------
+Livrables :
+- Registre de traitements (CNIL)
+- DPA signés (hébergeur, email, cal, IA)
+- DPIA réalisée et validée
+- Politique conservation (180j + purge auto)
+- Droits personnes (export/suppression)
+- Bannière cookies + consentement
+- Mentions légales + CGU
+
+SEMAINE 14 : Tests & GO-LIVE
+-----------------------------
+Livrables :
+- Tests E2E complets (tous parcours)
+- Tests accessibilité WCAG 2.1 AA
+- Pentest externe (3j/h)
+- Corrections critiques appliquées
+- Beta privée : 10 PME cibles
+- Collecte feedback (NPS, taux achèvement)
+- Documentation exploitation :
+  * Guide déploiement
+  * Runbook incidents
+  * Procédure RGPD (72h CNIL)
+- GO-LIVE production
+
+
+================================================================================
+10. MESURE & AMÉLIORATION CONTINUE
+================================================================================
+
+KPIs PRODUIT
+------------
+- Taux démarrage diag : visiteurs qui commencent le questionnaire
+- Taux complétion Express : % qui terminent les 6 questions
+- Taux complétion Détaillé : % qui terminent les 8 sections
+- Taux abandon par section : identifier friction
+- Temps médian complétion : Express vs Détaillé
+- Délai génération rapport : p50, p95, p99
+- Taux téléchargement PDF : % rapports téléchargés
+- Taux partage lien : % liens partagés
+- Conversion rapport → RDV : objectif ≥ 30%
+- Taux no-show RDV : objectif < 15%
+- NPS rapport : satisfaction utilisateur (0-10)
+
+KPIs BUSINESS
+-------------
+- Leads générés/mois
+- Leads qualifiés (score < 70) / mois
+- Taux conversion call → pentest signé
+- Revenu moyen par lead converti
+- CAC (coût acquisition client) vs LTV
+
+ANALYTICS
+---------
+- Plausible Analytics (RGPD-friendly)
+- Consentement cookies obligatoire
+- Tracking :
+  * Pages vues
+  * Événements : démarrage diag, complétion, téléchargement, RDV
+  * Sources trafic : organic, social, email, ads
+
+A/B TESTING (V2)
+----------------
+Hypothèses à tester :
+- Wording CTA : "Démarrer" vs "Obtenir mon rapport gratuit"
+- Longueur questionnaire : 6Q vs 10Q (Express)
+- Ordre sections Détaillé : Gouvernance first vs Identités first
+- Rapport : PDF seul vs PDF + web
+- Incentive RDV : "Audit gratuit 30min" vs "Plan d'action personnalisé"
+
+BOUCLE FEEDBACK
+---------------
+- Bouton "Signaler une imprécision" dans rapport
+- Formulaire satisfaction post-RDV
+- Revue trimestrielle :
+  * Ajuster poids scoring selon retours terrain
+  * Enrichir prompts IA avec nouveaux patterns
+  * Ajouter questions émergentes (ex: IA générative, supply chain)
+
+
+================================================================================
+11. PRICING & MODÈLE ÉCONOMIQUE
+================================================================================
+
+OFFRE GRATUITE (MVP)
+--------------------
+- Auto-diag Express ou Détaillé : illimité
+- Rapport synthétique PDF : 1 génération gratuite
+- Partage lien : 30 jours
+- Call découverte : 1 RDV 30 min offert
+
+UPSELL (V2)
+-----------
+Pack Découverte (149€ HT) :
+- Rapport détaillé enrichi (+ annexes techniques)
+- Atelier 1h avec consultant
+- Mini plan d'action priorisé (roadmap 6 mois)
+
+Abonnement Suivi (299€ HT/mois) :
+- Auto-diag trimestriel (suivi progression)
+- Suivi KPI (dashboard dédié)
+- Phishing simulation (1 campagne/trimestre)
+- Hotline cyber (2h/mois)
+
+Pack Pentest :
+- Sur devis selon périmètre
+- Livrable : rapport technique + exécutif
+- Recommandations priorisées
+- Retest offert (90j)
+
+
+================================================================================
+12. CHECK-LIST GO-LIVE
+================================================================================
+
+CONFORMITÉ RGPD
+---------------
+☐ Registre de traitements complété
+☐ Base légale définie (intérêt légitime + consentement)
+☐ Mentions d'information (privacy policy)
+☐ DPA signés (4 sous-traitants minimum)
+☐ DPIA réalisée et validée
+☐ Politique conservation configurée (180j)
+☐ Purge automatisée testée
+☐ Droits personnes implémentés (export/suppression)
+☐ Procédure violation données (72h CNIL)
+
+SÉCURITÉ
+--------
+☐ HSTS activé (max-age 31536000)
+☐ CSP stricte configurée
+☐ Cookies : HttpOnly, Secure, SameSite=Strict
+☐ Rate limiting : 100 req/h
+☐ CAPTCHA opérationnel
+☐ Secrets dans vault (pas de .env en prod)
+☐ SCA/SAST/DAST exécutés
+☐ Pentest réalisé + correctifs critiques appliqués
+☐ WAF configuré (Cloudflare/OVH)
+☐ Monitoring opérationnel (Sentry)
+☐ Logs centralisés (ELK/Vector)
+
+FONCTIONNEL
+-----------
+☐ Questionnaire Express testé (6Q)
+☐ Questionnaire Détaillé testé (8 sections + dépendances)
+☐ Scoring validé (5 scénarios A-E)
+☐ IA génère rapports cohérents (temp 0.3)
+☐ PDF générés < 60s (p95)
+☐ Partage lien tokenisé fonctionne
+☐ Intégration Cal.com opérationnelle
+☐ Emails envoyés (confirmation, rappels)
+☐ Back-office admin accessible (RBAC)
+☐ i18n FR/EN testé
+
+PERFORMANCE
+-----------
+☐ TTFB < 500ms (p95)
+☐ Génération rapport < 60s (p95)
+☐ Uptime cible : 99.5%
+☐ Queue jobs : max 5 concurrent (IA)
+☐ DB indexée (organization_id, assessment_id)
+
+ACCESSIBILITÉ
+-------------
+☐ Navigation clavier 100%
+☐ Lecteurs d'écran compatibles
+☐ Contraste WCAG 2.1 AA
+☐ Formulaires labellisés
+
+
+================================================================================
+13. RESSOURCES & RÉFÉRENCES
+================================================================================
+
+CADRES CYBERSÉCURITÉ
+--------------------
+- OWASP ASVS 4.0 (Application Security Verification Standard)
+- CIS Controls v8 (Center for Internet Security)
+- NIST SP 800-53 / 800-115 (Security Controls / Pentest)
+- ISO 27001:2022 / 27002:2022
+- MITRE ATT&CK (Tactics, Techniques, Procedures)
+- ANSSI (guides sectoriels France)
+
+CONFORMITÉ
+----------
+- RGPD (Règlement 2016/679)
+- PCI-DSS v4.0 (Payment Card Industry)
+- HDS (Hébergement Données de Santé - France)
+- HIPAA (Health Insurance Portability - US)
+- eIDAS (signature électronique UE)
+- IEC 62443 (cybersécurité OT industriel)
+
+OUTILS & PACKAGES
+-----------------
+Backend Laravel :
+- spatie/laravel-permission (RBAC)
+- barryvdh/laravel-dompdf (PDF)
+- darkaonline/l5-swagger (API doc)
+- laravel/telescope (debugging)
+- sentry/sentry-laravel (monitoring)
+
+Frontend Vue :
+- @inertiajs/vue3
+- @headlessui/vue
+- @tailwindcss/forms
+- vee-validate ou react-hook-form
+- chart.js / recharts
+- v-calendar
+
+Sécurité :
+- github/codeql (SAST)
+- owasp/zap (DAST)
+- snyk (SCA dépendances)
+
+
+================================================================================
+14. GLOSSAIRE
+================================================================================
+
+2FA/MFA : Authentification multi-facteurs (password + code SMS/app)
+ABAC : Attribute-Based Access Control (contrôle d'accès par attributs)
+CIS : Center for Internet Security (benchmarks sécurité)
+CMS : Content Management System (gestion contenus)
+CSP : Content Security Policy (en-tête sécurité HTTP)
+DPA : Data Processing Agreement (accord traitement données)
+DPIA : Data Protection Impact Assessment (analyse impact RGPD)
+EDR : Endpoint Detection & Response (sécurité postes)
+HSTS : HTTP Strict Transport Security
+HSM : Hardware Security Module (module cryptographique matériel)
+IDS/IPS : Intrusion Detection/Prevention System
+KMS : Key Management Service (gestion clés chiffrement)
+KYC/AML : Know Your Customer / Anti Money Laundering
+MDM : Mobile Device Management (gestion mobiles)
+NPS : Net Promoter Score (satisfaction client)
+OT : Operational Technology (systèmes industriels)
+PAM : Privileged Access Management (gestion comptes admin)
+Pentest : Test d'intrusion (ethical hacking)
+PRA : Plan de Reprise d'Activité
+PSP : Payment Service Provider (prestataire paiement)
+RBAC : Role-Based Access Control (contrôle d'accès par rôle)
+RPO/RTO : Recovery Point/Time Objective (objectifs PRA)
+SAST/DAST : Static/Dynamic Application Security Testing
+SIEM : Security Information & Event Management
+SOC : Security Operations Center
+SSO : Single Sign-On (authentification unique)
+WAF : Web Application Firewall
+WORM : Write Once Read Many (stockage immuable)
+
+
+================================================================================
+FIN DU CAHIER DES CHARGES
+================================================================================
+
+Document maintenu par : David Dolama & Acham
+Dernière mise à jour : 04 février 2026
+Contact : [email/téléphone consultant]
+
+PROCHAINES ÉTAPES :
+1. Validation cahier des charges avec commanditaires
+2. Choix hébergeur (OVH/Scaleway) + ouverture comptes
+3. Setup repo GitHub + CI/CD
+4. Kickoff développement (Semaine 1)
+
+Notes :
+- Ce document servira de référence contractuelle pour l'équipe dev
+- Toute modification majeure nécessite validation écrite
+- Les scénarios A-E seront utilisés pour tests d'acceptance

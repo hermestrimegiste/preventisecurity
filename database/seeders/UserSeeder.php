@@ -11,62 +11,67 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        $clinicAlpha = Organization::where('slug', 'clinic-alpha')->first();
-        $clinicBeta = Organization::where('slug', 'clinic-beta')->first();
-        $metroHospital = Organization::where('slug', 'metropolitan-hospital')->first();
+        $secureTech = Organization::where('slug', 'securetech')->first();
+        $cyberShield = Organization::where('slug', 'cybershield')->first();
+        $dataGuard = Organization::where('slug', 'dataguard')->first();
 
+        // Admin for SecureTech
         $admin = User::create([
-            'name' => 'Admin User',
+            'name' => 'Marc Dubois',
             'email' => 'admin@demo.com',
             'password' => Hash::make('password'),
-            'current_organization_id' => $clinicAlpha->id,
+            'current_organization_id' => $secureTech->id,
         ]);
         $admin->assignRole('admin');
-        $admin->organizations()->attach($clinicAlpha->id);
+        $admin->organizations()->attach($secureTech->id);
 
-        $doctor = User::create([
-            'name' => 'Dr. John Smith',
-            'email' => 'doctor@demo.com',
+        // Consultant with multi-org access
+        $consultant = User::create([
+            'name' => 'Sophie Bernard',
+            'email' => 'consultant@demo.com',
             'password' => Hash::make('password'),
-            'current_organization_id' => $clinicAlpha->id,
+            'current_organization_id' => $secureTech->id,
         ]);
-        $doctor->assignRole('doctor');
-        $doctor->organizations()->attach([$clinicAlpha->id, $clinicBeta->id]);
+        $consultant->assignRole('consultant');
+        $consultant->organizations()->attach([$secureTech->id, $cyberShield->id]);
 
-        $doctorBeta = User::create([
-            'name' => 'Dr. Sarah Johnson',
-            'email' => 'doctor.beta@demo.com',
+        // Consultant for CyberShield only
+        $consultantCs = User::create([
+            'name' => 'Thomas Laurent',
+            'email' => 'consultant.cs@demo.com',
             'password' => Hash::make('password'),
-            'current_organization_id' => $clinicBeta->id,
+            'current_organization_id' => $cyberShield->id,
         ]);
-        $doctorBeta->assignRole('doctor');
-        $doctorBeta->organizations()->attach($clinicBeta->id);
+        $consultantCs->assignRole('consultant');
+        $consultantCs->organizations()->attach($cyberShield->id);
 
-        $adminMetro = User::create([
-            'name' => 'Metro Admin',
-            'email' => 'admin.metro@demo.com',
+        // Admin for DataGuard
+        $adminDg = User::create([
+            'name' => 'Claire Martin',
+            'email' => 'admin.dg@demo.com',
             'password' => Hash::make('password'),
-            'current_organization_id' => $metroHospital->id,
+            'current_organization_id' => $dataGuard->id,
         ]);
-        $adminMetro->assignRole('admin');
-        $adminMetro->organizations()->attach($metroHospital->id);
+        $adminDg->assignRole('admin');
+        $adminDg->organizations()->attach($dataGuard->id);
 
-        $doctorMetro = User::create([
-            'name' => 'Dr. Michael Brown',
-            'email' => 'doctor.metro@demo.com',
+        // Analyst for DataGuard
+        $analystDg = User::create([
+            'name' => 'Pierre Leroy',
+            'email' => 'analyst.dg@demo.com',
             'password' => Hash::make('password'),
-            'current_organization_id' => $metroHospital->id,
+            'current_organization_id' => $dataGuard->id,
         ]);
-        $doctorMetro->assignRole('doctor');
-        $doctorMetro->organizations()->attach($metroHospital->id);
+        $analystDg->assignRole('analyst');
+        $analystDg->organizations()->attach($dataGuard->id);
 
         $this->command->info('Users created successfully!');
         $this->command->info('');
         $this->command->info('Demo Credentials:');
-        $this->command->info('Admin (Clinic Alpha): admin@demo.com / password');
-        $this->command->info('Doctor (Multi-Org): doctor@demo.com / password');
-        $this->command->info('Doctor (Beta Only): doctor.beta@demo.com / password');
-        $this->command->info('Admin (Metro): admin.metro@demo.com / password');
-        $this->command->info('Doctor (Metro): doctor.metro@demo.com / password');
+        $this->command->info('Admin (SecureTech): admin@demo.com / password');
+        $this->command->info('Consultant (Multi-Org): consultant@demo.com / password');
+        $this->command->info('Consultant (CyberShield): consultant.cs@demo.com / password');
+        $this->command->info('Admin (DataGuard): admin.dg@demo.com / password');
+        $this->command->info('Analyst (DataGuard): analyst.dg@demo.com / password');
     }
 }
