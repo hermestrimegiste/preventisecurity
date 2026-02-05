@@ -174,7 +174,7 @@ php artisan test --filter=AuthTest
 
 ## 📋 Project Status
 
-This project is currently in **Phase 1: Cleanup & Foundation**. The medical domain code (MediCare) has been removed, and the foundation for the vCISO platform is being established.
+This project is currently in **Phase 1: Cleanup & Foundation**. The medical domain code (vCISO) has been removed, and the foundation for the vCISO platform is being established.
 
 ### Completed
 

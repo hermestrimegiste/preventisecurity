@@ -7,8 +7,8 @@ use OpenApi\Annotations as OA;
 /**
  * @OA\Info(
  *     version="1.0.0",
- *     title="MediCare API Documentation",
- *     description="Documentation de l'API MediCare",
+ *     title="vCISO API Documentation",
+ *     description="Documentation de l'API vCISO",
  *     @OA\Contact(
  *         email="support@medicare.com"
  *     ),

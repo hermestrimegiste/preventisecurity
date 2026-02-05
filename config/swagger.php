@@ -44,7 +44,7 @@ return [
     |
     */
 
-    'title' => 'MediCare API Documentation',
+    'title' => 'vCISO API Documentation',
 
     /*
     |--------------------------------------------------------------------------
@@ -56,7 +56,7 @@ return [
     |
     */
 
-    'description' => 'API documentation for MediCare - A healthcare management system',
+    'description' => 'API documentation for vCISO - A healthcare management system',
 
     /*
     |--------------------------------------------------------------------------

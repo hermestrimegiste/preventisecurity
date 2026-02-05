@@ -917,7 +917,7 @@ EMAILS TRANSACTIONNELS
 SEMAINE 1 : Cadrage & Architecture
 -----------------------------------
 Livrables :
-- Audit complet codebase MediCare
+- Audit complet codebase vCISO
 - Architecture Decision Record (ADR) : 2 niveaux vs 1 niveau
 - Maquettes Figma (wireframes low-fi)
 - Schéma questionnaires finalisé (Express 6Q + Détaillé 8 sections)

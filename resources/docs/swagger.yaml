@@ -1,11 +1,11 @@
 openapi: 3.0.0
 info:
-  title: MediCare API Documentation
-  description: API documentation for MediCare - A healthcare management system
+  title: vCISO API Documentation
+  description: API documentation for vCISO - A healthcare management system
   version: 1.0.0
   contact:
     email: support@medicare.com
-    name: MediCare Support
+    name: vCISO Support
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
