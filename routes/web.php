@@ -26,10 +26,21 @@ Route::prefix('assessment')->group(function () {
     Route::get('/{assessment}/complete', [AssessmentController::class, 'complete'])->name('assessment.complete');
 });
 
+// Public Report Shared Link (no auth required)
+Route::get('/r/{token}', [ReportController::class, 'shared'])->name('report.shared');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Report Management
+    Route::prefix('reports')->group(function () {
+        Route::get('/{assessment}', [ReportController::class, 'show'])->name('reports.show');
+        Route::post('/{assessment}/generate', [ReportController::class, 'generate'])->name('reports.generate');
+        Route::post('/{assessment}/share', [ReportController::class, 'share'])->name('reports.share');
+        Route::get('/{assessment}/pdf', [ReportController::class, 'pdf'])->name('reports.pdf');
+    });
 
     // Organization Switching
     Route::post('/organization/switch/{organization}', [OrganizationController::class, 'switch'])

@@ -164,9 +164,10 @@ class AssessmentController extends Controller
     {
         $assessment->markAsSubmitted();
 
-        // Trigger report generation (async job would be better)
-        // For now, redirect to report page
-        
+        // Generate report immediately (for MVP; use queue in production)
+        $reportController = new \App\Http\Controllers\ReportController();
+        $reportController->generate($assessment);
+
         return redirect()->route('assessment.complete', [
             'assessment' => $assessment->id,
         ]);
